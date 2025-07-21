@@ -34,14 +34,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://romana.co.tz'),
+  metadataBase: new URL('https://romana-natural-products.org'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: "Romana Natural Products - Empowering Communities Through Nature",
     description: "Discover our range of organic, natural products designed to nourish your body and delight your senses. From Tanzania with love.",
-    url: 'https://romana.co.tz',
+    url: 'https://romana-natural-products.org',
     siteName: 'Romana Natural Products',
     locale: 'en_US',
     type: 'website',
