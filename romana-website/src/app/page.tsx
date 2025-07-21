@@ -2,42 +2,66 @@
 
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Leaf, Heart, Users, Globe, ArrowRight, Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+function ClientOnly({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-organic flex items-center justify-center">
+        <div className="text-center">
+          <Leaf className="h-12 w-12 text-primary mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 export default function Home() {
   return (
-    <div className="min-h-screen bg-organic">
-      {/* Navigation */}
-      <Header />
-      
-      {/* Hero Section */}
-      <HeroSection />
-      
-      {/* About Section */}
-      <AboutSection />
-      
-      {/* Values Section */}
-      <ValuesSection />
-      
-      {/* Products Section */}
-      <ProductsSection />
-      
-      {/* Product Gallery Section */}
-      <ProductGallerySection />
-      
-      {/* Team Section */}
-      <TeamSection />
-      
-      {/* Contact Section */}
-      <ContactSection />
-      
-      {/* Footer */}
-      <Footer />
-    </div>
+    <ClientOnly>
+      <div className="min-h-screen bg-organic">
+        {/* Navigation */}
+        <Header />
+        
+        {/* Hero Section */}
+        <HeroSection />
+        
+        {/* About Section */}
+        <AboutSection />
+        
+        {/* Values Section */}
+        <ValuesSection />
+        
+        {/* Products Section */}
+        <ProductsSection />
+        
+        {/* Product Gallery Section */}
+        <ProductGallerySection />
+        
+        {/* Team Section */}
+        <TeamSection />
+        
+        {/* Contact Section */}
+        <ContactSection />
+        
+        {/* Footer */}
+        <Footer />
+      </div>
+    </ClientOnly>
   );
 }
 
