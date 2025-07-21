@@ -26,6 +26,9 @@ export default function Home() {
       {/* Products Section */}
       <ProductsSection />
       
+      {/* Product Gallery Section */}
+      <ProductGallerySection />
+      
       {/* Team Section */}
       <TeamSection />
       
@@ -48,24 +51,29 @@ function Header() {
             <span className="text-2xl font-bold text-gradient-green">Romana</span>
           </div>
           
-          {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              <a href="#about" className="text-gray-700 hover:text-primary transition-colors">About</a>
-              <a href="#values" className="text-gray-700 hover:text-primary transition-colors">Values</a>
-              <a href="#products" className="text-gray-700 hover:text-primary transition-colors">Products</a>
-              <a href="#team" className="text-gray-700 hover:text-primary transition-colors">Team</a>
-              <a href="#contact" className="text-gray-700 hover:text-primary transition-colors">Contact</a>
+              <Link href="#home" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                Home
+              </Link>
+              <Link href="#about" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                About
+              </Link>
+              <Link href="#products" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                Products
+              </Link>
+              <Link href="#team" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                Team
+              </Link>
+              <Link href="#contact" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                Contact
+              </Link>
             </div>
           </div>
           
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button variant="ghost" size="sm">
-              <span className="sr-only">Open menu</span>
-              ☰
-            </Button>
-          </div>
+          <Button className="bg-primary hover:bg-primary/90 text-white">
+            Get Started
+          </Button>
         </div>
       </div>
     </nav>
@@ -74,29 +82,35 @@ function Header() {
 
 function HeroSection() {
   const [ref, inView] = useInView({
-    threshold: 0.3,
+    threshold: 0.2,
     triggerOnce: true,
   });
 
   return (
-    <section ref={ref} className="relative pt-24 pb-16 bg-gradient-to-br from-green-50 to-white overflow-hidden">
+    <section id="home" ref={ref} className="pt-20 pb-16 bg-organic min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-              <span className="text-gradient-green">Empowering</span><br />
-              <span className="text-gray-900">Communities</span><br />
-              <span className="text-primary">Through Nature</span>
-            </h1>
+            <div className="space-y-4">
+              <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                Empowering Communities Through{' '}
+                <span className="text-gradient-green">Nature</span>
+              </h1>
+              <p className="text-xl text-gray-600 leading-relaxed">
+                Discover our range of organic, natural products designed to nourish your body and delight your senses. 
+                We're committed to making healthy eating accessible and affordable for all.
+              </p>
+            </div>
             
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Empowering communities through innovative food production and sustainable farming practices 
-              to make healthy eating accessible and affordable for all.
+            <p className="text-lg text-gray-700 leading-relaxed">
+              At Romana Natural Products, we believe in the power of nature to transform lives. 
+              Through innovative food production and sustainable farming practices, we're building 
+              a healthier future for communities across Tanzania and beyond.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -132,11 +146,19 @@ function HeroSection() {
             className="relative"
           >
             <div className="relative w-full h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src="/images/products/WhatsApp Image 2025-07-20 at 19.51.03.jpeg"
+                alt="Romana Natural Products - Fresh Organic Juices"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+              />
               <div className="absolute inset-0 bg-gradient-to-br from-green-400/20 to-transparent z-10"></div>
-              <div className="w-full h-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
-                <div className="text-center">
-                  <Leaf className="h-24 w-24 text-primary mx-auto mb-4" />
-                  <p className="text-gray-600 text-lg">Fresh, Organic, Natural</p>
+              <div className="absolute bottom-6 left-6 text-white z-20">
+                <div className="flex items-center mb-2">
+                  <Leaf className="h-6 w-6 text-green-400 mr-2" />
+                  <p className="text-lg font-semibold">Fresh, Organic, Natural</p>
                 </div>
               </div>
             </div>
@@ -156,69 +178,66 @@ function AboutSection() {
   return (
     <section id="about" ref={ref} className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Romana: A Journey to <span className="text-gradient-green">Health and Happiness</span>
-          </h2>
-          <div className="w-24 h-1 bg-primary mx-auto mb-8"></div>
-        </motion.div>
-        
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -50 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8 }}
             className="space-y-6"
           >
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Once upon a time, in the heart of East Africa, Romana was born from a simple yet powerful idea: 
-              <strong className="text-primary"> healthy eating should be accessible to everyone</strong>. 
-              Inspired by the richness of nature and the need for wholesome nutrition, we set out to create 
-              a brand that champions health, affordability, and sustainability.
-            </p>
-            
-            <p className="text-lg text-gray-600 leading-relaxed">
-              At Romana, we believe that every sip of juice and every bite of food should not only nourish 
-              the body but also bring joy to the soul. From our humble beginnings, we've worked tirelessly 
-              to craft products that are as pure as they are delicious, free from artificial additives and 
-              full of natural goodness.
-            </p>
-            
-            <p className="text-lg text-gray-600 leading-relaxed">
-              Our journey is guided by a commitment to <strong className="text-primary">empowering communities</strong>. 
-              By sourcing local ingredients and embracing environmentally responsible practices, we're building 
-              a healthier future for both our customers and the planet.
-            </p>
-            
-            <div className="pt-6">
-              <p className="text-xl font-semibold text-primary mb-4">
-                Today, Romana is more than just a brand—it's a lifestyle.
-              </p>
-              <p className="text-lg text-gray-600">
-                It's for the dreamers, the doers, and the changemakers who believe that health and happiness go hand in hand. 
-                Welcome to Romana, where every product is a promise: of care, of quality, and of a better tomorrow.
+            <div className="space-y-4">
+              <h2 className="text-4xl font-bold text-gray-900">
+                Inspiring a healthier, more sustainable way of living
+              </h2>
+              <p className="text-lg text-gray-600 leading-relaxed">
+                Our story began with a simple yet powerful vision: to make nutritious, 
+                organic food accessible to everyone while supporting local communities and 
+                promoting sustainable farming practices.
               </p>
             </div>
+            
+            <div className="space-y-4">
+              <p className="text-gray-700 leading-relaxed">
+                We partner with local farmers across Tanzania, providing them with the tools, 
+                knowledge, and fair compensation they need to grow the highest quality organic 
+                produce. Every product we create tells a story of community empowerment and 
+                environmental stewardship.
+              </p>
+              
+              <p className="text-gray-700 leading-relaxed">
+                From our state-of-the-art processing facilities to our commitment to zero-waste 
+                packaging, every aspect of our operation is designed with sustainability in mind. 
+                We believe that caring for our planet and our people isn't just good business—it's the right thing to do.
+              </p>
+            </div>
+            
+            <Button className="bg-primary hover:bg-primary/90 text-white">
+              Learn More About Our Mission
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
           </motion.div>
           
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 50 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="relative"
           >
             <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-xl">
-              <div className="w-full h-full bg-gradient-to-br from-green-100 via-green-200 to-green-300 flex items-center justify-center">
-                <div className="text-center">
-                  <Heart className="h-20 w-20 text-primary mx-auto mb-4" />
-                  <p className="text-gray-700 text-lg font-medium">From Heart to Health</p>
-                  <p className="text-gray-600">Tanzania's Natural Bounty</p>
+              <Image
+                src="/images/products/child.jpeg"
+                alt="From Heart to Health - Tanzanian Natural Beauty"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+              <div className="absolute bottom-6 left-6 text-white">
+                <div className="flex items-center mb-2">
+                  <Heart className="h-6 w-6 text-red-400 mr-2" />
+                  <p className="text-lg font-semibold">From Heart to Health</p>
                 </div>
+                <p className="text-green-200 font-medium">Tanzanian Natural Beauty</p>
               </div>
             </div>
           </motion.div>
@@ -236,29 +255,29 @@ function ValuesSection() {
 
   const values = [
     {
+      icon: Leaf,
+      title: 'Sustainability',
+      description: 'We prioritize environmental responsibility in every aspect of our operations, from farming to packaging.',
+    },
+    {
       icon: Heart,
-      title: "Health First",
-      description: "We prioritize your wellbeing by providing products free from artificial additives, full of natural nutrients that nourish your body and soul."
+      title: 'Community',
+      description: 'We believe in empowering local communities and creating opportunities that benefit everyone.',
     },
     {
       icon: Users,
-      title: "Community",
-      description: "Empowering local farmers and communities through sustainable partnerships, creating opportunities and building stronger, healthier societies."
-    },
-    {
-      icon: Leaf,
-      title: "Sustainability",
-      description: "Committed to environmentally responsible practices, from farm to table, ensuring a healthier planet for future generations."
+      title: 'Quality',
+      description: 'Our commitment to excellence ensures that every product meets the highest standards of purity and nutrition.',
     },
     {
       icon: Globe,
-      title: "Accessibility",
-      description: "Making healthy, organic food affordable and accessible to all, because everyone deserves the opportunity to live well."
-    }
+      title: 'Accessibility',
+      description: 'We work tirelessly to make healthy, organic food affordable and available to all communities.',
+    },
   ];
 
   return (
-    <section id="values" ref={ref} className="py-20 bg-gradient-to-br from-green-50 to-white">
+    <section ref={ref} className="py-20 bg-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -266,15 +285,13 @@ function ValuesSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Our <span className="text-gradient-green">Core Values</span>
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Core Values</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            The principles that guide everything we do, from growing and sourcing to delivering the finest organic products.
+            These principles guide everything we do, from the seeds we plant to the communities we serve.
           </p>
         </motion.div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {values.map((value, index) => (
             <motion.div
               key={index}
@@ -282,7 +299,7 @@ function ValuesSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: index * 0.1 }}
             >
-              <Card className="h-full bg-white hover:shadow-lg transition-shadow duration-300 border-0 shadow-md">
+              <Card className="bg-white border-green-200 hover:shadow-lg transition-shadow duration-300 h-full">
                 <CardHeader className="text-center">
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <value.icon className="h-8 w-8 text-primary" />
@@ -290,9 +307,7 @@ function ValuesSection() {
                   <CardTitle className="text-xl text-gray-900">{value.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-gray-600 text-center leading-relaxed">
-                    {value.description}
-                  </CardDescription>
+                  <p className="text-gray-600 text-center leading-relaxed">{value.description}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -311,17 +326,23 @@ function ProductsSection() {
 
   const products = [
     {
-      title: "Organic Juices",
-      description: "Fresh, cold-pressed juices made from locally sourced organic fruits. Pure nutrition in every sip.",
-      features: ["100% Organic", "No Added Sugar", "Cold-Pressed", "Locally Sourced"],
-      image: "🥤"
+      title: 'Premium Organic Juices',
+      description: 'Fresh-pressed juices made from the finest organic fruits, bursting with natural vitamins and minerals.',
+      features: ['100% Organic', 'No Added Sugar', 'Rich in Vitamins', 'Fresh Daily'],
+      image: '/images/products/WhatsApp Image 2025-07-20 at 19.51.04.jpeg',
     },
     {
-      title: "Organic Foods",
-      description: "Wholesome, natural food products crafted with care. From farm to table, pure and delicious.",
-      features: ["Chemical-Free", "Non-GMO", "Sustainably Grown", "Nutrient-Rich"],
-      image: "🥬"
-    }
+      title: 'Natural Health Foods',
+      description: 'Wholesome, nutrient-dense foods that support your wellness journey and fuel your active lifestyle.',
+      features: ['Locally Sourced', 'Nutrient Dense', 'Sustainable', 'Traditional Methods'],
+      image: '/images/products/WhatsApp Image 2025-07-21 at 19.03.45.jpeg',
+    },
+    {
+      title: 'Organic Superfood Blends',
+      description: 'Carefully crafted combinations of superfoods designed to boost energy and support optimal health.',
+      features: ['Antioxidant Rich', 'Energy Boosting', 'Immune Support', 'Premium Quality'],
+      image: '/images/products/WhatsApp Image 2025-07-21 at 19.03.47.jpeg',
+    },
   ];
 
   return (
@@ -333,44 +354,126 @@ function ProductsSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Our <span className="text-gradient-green">Products</span>
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Premium Products</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover our range of organic, natural products designed to nourish your body and delight your senses.
+            Discover our carefully curated selection of organic products, each crafted with love and designed to nourish your body naturally.
           </p>
         </motion.div>
-        
-        <div className="grid lg:grid-cols-2 gap-12">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {products.map((product, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: index * 0.2 }}
             >
-              <Card className="h-full bg-gradient-to-br from-green-50 to-white border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <Card className="bg-white border-green-200 hover:shadow-xl transition-all duration-300 h-full group">
+                <div className="relative h-64 overflow-hidden rounded-t-lg">
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                </div>
                 <CardHeader>
-                  <div className="text-6xl mb-4 text-center">{product.image}</div>
                   <CardTitle className="text-2xl text-center text-gray-900">{product.title}</CardTitle>
-                  <CardDescription className="text-center text-gray-600 text-lg">
+                  <CardDescription className="text-center text-gray-600 leading-relaxed">
                     {product.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {product.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center space-x-3">
-                        <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                        <span className="text-gray-700">{feature}</span>
-                      </div>
-                    ))}
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-2">
+                      {product.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center text-sm text-gray-600">
+                          <CheckCircle className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                          {feature}
+                        </div>
+                      ))}
+                    </div>
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-white">
+                      Learn More
+                    </Button>
                   </div>
-                  <Button className="w-full mt-6 bg-primary hover:bg-primary/90">
-                    Learn More
-                  </Button>
                 </CardContent>
               </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductGallerySection() {
+  const [ref, inView] = useInView({
+    threshold: 0.2,
+    triggerOnce: true,
+  });
+
+  const galleryImages = [
+    { 
+      src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.09.jpeg',
+      alt: 'Fresh Organic Juice Collection',
+    },
+    { 
+      src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.12.jpeg',
+      alt: 'Premium Natural Products',
+    },
+    { 
+      src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.14.jpeg',
+      alt: 'Healthy Organic Foods',
+    },
+    { 
+      src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.48.jpeg',
+      alt: 'Superfood Blends',
+    },
+    { 
+      src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.50.jpeg',
+      alt: 'Natural Health Products',
+    },
+    { 
+      src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.53.jpeg',
+      alt: 'Organic Product Range',
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-20 bg-green-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Product Gallery</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Take a closer look at our beautiful, natural products crafted with care and passion.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {galleryImages.map((image, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="relative h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
+            >
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </motion.div>
           ))}
         </div>
@@ -387,23 +490,25 @@ function TeamSection() {
 
   const team = [
     {
-      name: "Chief Operating Officer",
-      role: "COO",
-      description: "With a strong foundation in food science and sustainable agriculture, earned during studies in Italy, and a master's degree in agribusiness. Driving Romana's mission of delivering healthy, affordable, and sustainable food solutions.",
-      expertise: ["Food Science", "Sustainable Agriculture", "Agribusiness", "Operations Management"],
-      education: "Italy (Food Science & Sustainable Agriculture)"
+      name: 'Chief Operating Officer',
+      role: 'Operations & Strategy',
+      description: 'With extensive education from Italy and deep expertise in sustainable agriculture, our COO leads our operational excellence and strategic partnerships across East Africa.',
+      image: '/images/team/coo.jpeg',
+      education: 'Educated in Italy',
+      expertise: 'Sustainable Agriculture & Operations',
     },
     {
-      name: "Chief Financial Officer", 
-      role: "CFO",
-      description: "Bringing wealth of experience from working with global organizations such as BCG and Ascent. With expertise in financial strategy, investment management, and business growth, playing a pivotal role in ensuring Romana's financial health and sustainability.",
-      expertise: ["Financial Strategy", "Investment Management", "Business Growth", "Strategic Planning"],
-      experience: "BCG & Ascent"
-    }
+      name: 'Chief Financial Officer',
+      role: 'Finance & Growth',
+      description: 'Bringing valuable experience from BCG and Ascent, our CFO drives financial strategy and business development to scale our impact across communities.',
+      image: '/images/team/cfo.jpg',
+      experience: 'Former BCG & Ascent',
+      expertise: 'Financial Strategy & Business Development',
+    },
   ];
 
   return (
-    <section id="team" ref={ref} className="py-20 bg-gradient-to-br from-green-50 to-white">
+    <section id="team" ref={ref} className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -411,15 +516,13 @@ function TeamSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Meet Our <span className="text-gradient-green">Leadership Team</span>
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Leadership Team</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Passionate leaders driving innovation and sustainability in organic food production.
+            Meet the passionate leaders driving our mission to transform communities through sustainable, organic nutrition.
           </p>
         </motion.div>
-        
-        <div className="grid lg:grid-cols-2 gap-12">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {team.map((member, index) => (
             <motion.div
               key={index}
@@ -427,42 +530,32 @@ function TeamSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: index * 0.2 }}
             >
-              <Card className="h-full bg-white border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <Card className="bg-white border-green-200 hover:shadow-xl transition-shadow duration-300 h-full">
+                <div className="relative h-80 overflow-hidden rounded-t-lg">
+                  <Image
+                    src={member.image}
+                    alt={member.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-4 left-6 text-white">
+                    <h3 className="text-2xl font-bold mb-1">{member.name}</h3>
+                    <p className="text-green-200 font-medium">{member.role}</p>
+                  </div>
+                </div>
                 <CardHeader>
-                  <div className="w-24 h-24 bg-gradient-to-br from-primary to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Users className="h-12 w-12 text-white" />
-                  </div>
                   <CardTitle className="text-2xl text-center text-gray-900">{member.name}</CardTitle>
-                  <div className="text-center">
-                    <span className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium">
-                      {member.role}
-                    </span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <CardDescription className="text-gray-600 leading-relaxed">
-                    {member.description}
-                  </CardDescription>
-                  
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3">Areas of Expertise</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {member.expertise.map((skill, skillIndex) => (
-                        <span 
-                          key={skillIndex}
-                          className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4 border-t">
-                    <p className="text-sm text-gray-600">
-                      <strong>Background:</strong> {member.education || member.experience}
+                  <div className="text-center space-y-2">
+                    <p className="text-primary font-semibold">{member.expertise}</p>
+                    <p className="text-gray-600 text-sm">
+                      {member.education || member.experience}
                     </p>
                   </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 leading-relaxed text-center">{member.description}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -480,7 +573,7 @@ function ContactSection() {
   });
 
   return (
-    <section id="contact" ref={ref} className="py-20 bg-white">
+    <section id="contact" ref={ref} className="py-20 bg-green-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -488,126 +581,116 @@ function ContactSection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Get in <span className="text-gradient-green">Touch</span>
-          </h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Get in Touch</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Ready to join our journey towards healthier, sustainable living? We'd love to hear from you.
+            Ready to join our mission? We'd love to hear from you. Reach out to learn more about our products, partnerships, or career opportunities.
           </p>
         </motion.div>
-        
-        <div className="grid lg:grid-cols-2 gap-16">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8 }}
             className="space-y-8"
           >
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h3>
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Location</h4>
-                    <p className="text-gray-600">Tanzania, East Africa</p>
-                  </div>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Mail className="h-6 w-6 text-primary" />
                 </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Email</h4>
-                    <p className="text-gray-600">info@romana.co.tz</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Phone className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Phone</h4>
-                    <p className="text-gray-600">+255 XXX XXX XXX</p>
-                  </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Email Us</h3>
+                  <p className="text-gray-600">info@romana.co.tz</p>
                 </div>
               </div>
-            </div>
-            
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Follow Us</h3>
-              <div className="flex space-x-4">
-                <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10">
-                  Facebook
-                </Button>
-                <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10">
-                  Instagram
-                </Button>
-                <Button variant="outline" size="sm" className="border-primary text-primary hover:bg-primary/10">
-                  LinkedIn
-                </Button>
+              
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Phone className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Call Us</h3>
+                  <p className="text-gray-600">+255 123 456 789</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <MapPin className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Visit Us</h3>
+                  <p className="text-gray-600">Dar es Salaam, Tanzania</p>
+                </div>
               </div>
             </div>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <Card className="bg-gradient-to-br from-green-50 to-white border-0 shadow-lg">
+            <Card className="bg-white border-green-200 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-2xl text-gray-900">Send us a Message</CardTitle>
                 <CardDescription>
-                  Interested in our products or have questions? Drop us a line!
+                  We'll get back to you within 24 hours.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+              <CardContent>
+                <form className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="John"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                        placeholder="Doe"
+                      />
+                    </div>
+                  </div>
+                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="John"
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="john@example.com"
                     />
                   </div>
+                  
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                      placeholder="Doe"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Message
+                    </label>
+                    <textarea
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder="Tell us about your interest in our products or partnership opportunities..."
+                    ></textarea>
                   </div>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                  <input 
-                    type="email" 
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="john@example.com"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
-                  <textarea 
-                    rows={4}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Tell us how we can help you..."
-                  ></textarea>
-                </div>
-                
-                <Button className="w-full bg-primary hover:bg-primary/90">
-                  Send Message
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                  
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
+                    Send Message
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </motion.div>
@@ -619,45 +702,49 @@ function ContactSection() {
 
 function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-16">
+    <footer className="bg-gray-900 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
-          <div className="col-span-2">
-            <div className="flex items-center mb-6">
-              <Leaf className="h-8 w-8 text-green-400 mr-2" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <Leaf className="h-8 w-8 text-primary mr-2" />
               <span className="text-2xl font-bold">Romana</span>
             </div>
-            <p className="text-gray-300 mb-6 max-w-md">
-              Empowering communities through innovative food production and sustainable farming practices 
-              to make healthy eating accessible and affordable for all.
-            </p>
-            <p className="text-gray-400 text-sm">
-              © 2025 Romana Natural Products Tanzania. All rights reserved.
+            <p className="text-gray-400 leading-relaxed">
+              Empowering communities through innovative food production and sustainable farming practices.
             </p>
           </div>
           
-          <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-gray-300">
-              <li><a href="#about" className="hover:text-green-400 transition-colors">About Us</a></li>
-              <li><a href="#products" className="hover:text-green-400 transition-colors">Products</a></li>
-              <li><a href="#values" className="hover:text-green-400 transition-colors">Our Values</a></li>
-              <li><a href="#team" className="hover:text-green-400 transition-colors">Team</a></li>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Products</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li><Link href="#" className="hover:text-white transition-colors">Organic Juices</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Health Foods</Link></li>
+              <li><Link href="#" className="hover:text-white transition-colors">Superfood Blends</Link></li>
             </ul>
           </div>
           
-          <div>
-            <h3 className="font-semibold mb-4">Contact</h3>
-            <ul className="space-y-2 text-gray-300">
-              <li>Tanzania, East Africa</li>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Company</h3>
+            <ul className="space-y-2 text-gray-400">
+              <li><Link href="#about" className="hover:text-white transition-colors">About Us</Link></li>
+              <li><Link href="#team" className="hover:text-white transition-colors">Our Team</Link></li>
+              <li><Link href="#contact" className="hover:text-white transition-colors">Contact</Link></li>
+            </ul>
+          </div>
+          
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Connect</h3>
+            <ul className="space-y-2 text-gray-400">
               <li>info@romana.co.tz</li>
-              <li>+255 XXX XXX XXX</li>
+              <li>+255 123 456 789</li>
+              <li>Dar es Salaam, Tanzania</li>
             </ul>
           </div>
         </div>
         
-        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
-          <p>Let's raise a glass to health, sustainability, and a shared journey toward well-being! 🌱</p>
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; 2024 Romana Natural Products. All rights reserved.</p>
         </div>
       </div>
     </footer>
