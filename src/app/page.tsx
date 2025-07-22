@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Leaf, Heart, Users, Globe, ArrowRight, Mail, Phone, MapPin, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import AuthButton from '@/components/ui/AuthButton';
 
 function ClientOnly({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -102,6 +103,9 @@ function Header() {
               <Link href="#about" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
                 About
               </Link>
+              <Link href="/store" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                Store
+              </Link>
               <Link href="#products" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
                 Products
               </Link>
@@ -114,9 +118,7 @@ function Header() {
             </div>
           </div>
           
-          <Button className="bg-primary hover:bg-primary/90 text-white">
-            Get Started
-          </Button>
+          <AuthButton />
         </div>
       </div>
     </nav>
@@ -157,10 +159,12 @@ function HeroSection() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-3">
-                Discover Our Products
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <Link href="/store">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 py-3 w-full sm:w-auto">
+                  Shop Now
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
               <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10 px-8 py-3">
                 Our Story
               </Button>
