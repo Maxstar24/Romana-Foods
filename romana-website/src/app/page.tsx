@@ -71,8 +71,14 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Leaf className="h-8 w-8 text-primary mr-2" />
-            <span className="text-2xl font-bold text-gradient-green">Romana</span>
+            <Image 
+              src="/images/logos/Romana_Logo_page-0001-removebg-preview.png" 
+              alt="Romana Logo" 
+              width={160} 
+              height={64} 
+              className="h-14 w-auto" 
+              priority
+            />
           </div>
           
           <div className="hidden md:block">

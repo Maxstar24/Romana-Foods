@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/images/logos/Romana_Logo_page-0001-removebg-preview.png',
         width: 1200,
         height: 630,
         alt: 'Romana Natural Products - Organic Food from Tanzania',
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: "Romana Natural Products - Empowering Communities Through Nature",
     description: "Discover our range of organic, natural products designed to nourish your body and delight your senses.",
-    images: ['/og-image.jpg'],
+    images: ['/images/logos/Romana_Logo_page-0001-removebg-preview.png'],
   },
   robots: {
     index: true,
@@ -80,6 +80,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/images/logos/Romana_Logo_page-0001-removebg-preview.png" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
