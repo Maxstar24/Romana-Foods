@@ -446,66 +446,73 @@ function ProductGallerySection() {
     triggerOnce: true,
   });
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [flippedCards, setFlippedCards] = useState<number[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const galleryImages = [
     { 
       src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.09.jpeg',
       alt: 'Fresh Organic Juice Collection',
       title: 'Fresh Organic Juices',
-      description: 'Pure, natural juices packed with vitamins'
+      description: 'Pure, natural juices packed with vitamins and minerals. Our fresh-pressed juices are made from the finest organic fruits, ensuring maximum nutrition and taste.',
+      benefits: ['100% Organic', 'No Preservatives', 'Rich in Vitamins', 'Freshly Pressed Daily']
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.12.jpeg',
       alt: 'Premium Natural Products',
       title: 'Premium Natural Products',
-      description: 'High-quality organic products for health'
+      description: 'High-quality organic products for health and wellness. Each product is carefully crafted using traditional methods and sustainable practices.',
+      benefits: ['Sustainably Sourced', 'Traditional Methods', 'Premium Quality', 'Community Supported']
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.14.jpeg',
       alt: 'Healthy Organic Foods',
       title: 'Healthy Organic Foods',
-      description: 'Wholesome foods for better nutrition'
+      description: 'Wholesome foods for better nutrition and lifestyle. Our organic foods support your wellness journey with natural goodness.',
+      benefits: ['Nutrient Dense', 'Organic Certified', 'Locally Sourced', 'Health Supporting']
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.48.jpeg',
       alt: 'Superfood Blends',
       title: 'Superfood Blends',
-      description: 'Nutrient-dense superfoods for energy'
+      description: 'Nutrient-dense superfoods for energy and vitality. Our carefully crafted blends combine the best superfoods for optimal health benefits.',
+      benefits: ['Antioxidant Rich', 'Energy Boosting', 'Immune Support', 'Natural Ingredients']
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.50.jpeg',
       alt: 'Natural Health Products',
       title: 'Natural Health Products',
-      description: 'Supporting your wellness journey naturally'
+      description: 'Supporting your wellness journey naturally with products designed to nourish your body and enhance your well-being.',
+      benefits: ['All Natural', 'Wellness Focused', 'Scientifically Backed', 'Gentle on Body']
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.53.jpeg',
       alt: 'Organic Product Range',
       title: 'Organic Product Range',
-      description: 'Complete selection of organic goodness'
+      description: 'Complete selection of organic goodness from farm to table. Our diverse range ensures there\'s something for every health-conscious individual.',
+      benefits: ['Farm Fresh', 'Complete Range', 'Quality Assured', 'Organic Certified']
     },
   ];
 
-  const handleCardClick = (index: number) => {
-    setFlippedCards(prev => 
-      prev.includes(index) 
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
-    );
+  // Duplicate array for seamless infinite scroll
+  const infiniteProducts = [...galleryImages, ...galleryImages, ...galleryImages];
+
+  const handleProductClick = async (index: number) => {
+    setIsAnimating(true);
+    await new Promise(resolve => setTimeout(resolve, 200)); // Short delay for flip animation
+    setSelectedProduct(index);
+    setIsAnimating(false);
   };
 
-  // Auto-scroll carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % galleryImages.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [galleryImages.length]);
+  const handleCloseModal = async () => {
+    setIsAnimating(true);
+    await new Promise(resolve => setTimeout(resolve, 200)); // Short delay for flip animation
+    setSelectedProduct(null);
+    setIsAnimating(false);
+  };
 
   return (
-    <section ref={ref} className="py-20 bg-green-50 overflow-hidden">
+    <section ref={ref} className="py-20 bg-gradient-to-br from-green-50 to-emerald-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -513,87 +520,172 @@ function ProductGallerySection() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Product Gallery</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Flowing Product Gallery</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Take a closer look at our beautiful, natural products crafted with care and passion. Tap on any card to explore!
+            Watch our products flow through this endless gallery. Tap any product to explore its benefits and features in detail.
           </p>
         </motion.div>
 
-        {/* Carousel Container */}
-        <div className="relative">
-          <motion.div 
-            className="flex gap-6"
-            animate={{ x: `-${currentIndex * (300 + 24)}px` }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            style={{ width: `${galleryImages.length * (300 + 24)}px` }}
+        {/* Endless Flowing Gallery */}
+        <div className="relative h-96 overflow-hidden">
+          <motion.div
+            className="flex gap-6 h-full"
+            animate={{
+              x: [`0px`, `-${galleryImages.length * 326}px`],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            style={{ width: `${infiniteProducts.length * 326}px` }}
           >
-            {galleryImages.map((image, index) => (
+            {infiniteProducts.map((product, index) => (
               <motion.div
-                key={index}
-                className="relative w-72 h-80 cursor-pointer"
-                onClick={() => handleCardClick(index)}
-                whileHover={{ y: -10 }}
+                key={`${index}-${product.title}`}
+                className="relative w-80 h-80 cursor-pointer flex-shrink-0"
+                onClick={() => handleProductClick(index % galleryImages.length)}
+                whileHover={{ 
+                  scale: 1.05,
+                  rotateY: 5,
+                  z: 50,
+                }}
                 whileTap={{ scale: 0.95 }}
+                initial={{ rotateY: 0 }}
+                animate={{ 
+                  rotateY: isAnimating && selectedProduct === (index % galleryImages.length) ? 180 : 0,
+                }}
+                transition={{ 
+                  duration: 0.6, 
+                  ease: "easeInOut",
+                  type: "spring",
+                  stiffness: 100,
+                }}
+                style={{ 
+                  transformStyle: "preserve-3d",
+                }}
               >
-                {/* Card Container with 3D flip effect */}
-                <motion.div
-                  className="relative w-full h-full preserve-3d"
-                  animate={{ rotateY: flippedCards.includes(index) ? 180 : 0 }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
-                  style={{ transformStyle: "preserve-3d" }}
-                >
-                  {/* Front Side */}
-                  <div 
-                    className="absolute inset-0 backface-hidden rounded-xl overflow-hidden shadow-lg"
-                    style={{ backfaceVisibility: "hidden" }}
-                  >
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover"
-                      sizes="300px"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                    <div className="absolute bottom-4 left-4 text-white">
-                      <h3 className="text-lg font-bold mb-1">{image.title}</h3>
-                      <p className="text-sm opacity-90">Tap to learn more</p>
+                {/* Product Card */}
+                <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl bg-white transform-gpu">
+                  <Image
+                    src={product.src}
+                    alt={product.alt}
+                    fill
+                    className="object-cover transition-transform duration-300"
+                    sizes="320px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 text-white">
+                    <h3 className="text-xl font-bold mb-2">{product.title}</h3>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <p className="text-sm opacity-90">Tap to explore</p>
                     </div>
                   </div>
-
-                  {/* Back Side */}
-                  <div 
-                    className="absolute inset-0 backface-hidden rounded-xl bg-gradient-to-br from-primary to-green-600 p-6 flex flex-col justify-center items-center text-white shadow-lg"
-                    style={{ 
-                      backfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)"
+                  
+                  {/* Floating elements for visual appeal */}
+                  <motion.div
+                    className="absolute top-4 right-4 w-8 h-8 bg-white/20 rounded-full backdrop-blur-sm"
+                    animate={{ 
+                      rotate: 360,
+                      scale: [1, 1.2, 1],
                     }}
-                  >
-                    <Leaf className="h-12 w-12 mb-4 opacity-80" />
-                    <h3 className="text-xl font-bold mb-3 text-center">{image.title}</h3>
-                    <p className="text-center text-sm opacity-90 leading-relaxed">{image.description}</p>
-                    <Button className="mt-4 bg-white text-primary hover:bg-green-50">
-                      Learn More
-                    </Button>
-                  </div>
-                </motion.div>
+                    transition={{ 
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  />
+                </div>
               </motion.div>
             ))}
           </motion.div>
         </div>
 
-        {/* Navigation Dots */}
-        <div className="flex justify-center mt-8 space-x-2">
-          {galleryImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                index === currentIndex ? 'bg-primary' : 'bg-gray-300'
-              }`}
-            />
-          ))}
-        </div>
+        {/* Modal for expanded view */}
+        {selectedProduct !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={handleCloseModal}
+          >
+            <motion.div
+              initial={{ scale: 0, rotateY: 180 }}
+              animate={{ scale: 1, rotateY: 0 }}
+              exit={{ scale: 0, rotateY: -180 }}
+              transition={{ 
+                duration: 0.8, 
+                ease: "easeInOut",
+                type: "spring",
+                stiffness: 100,
+              }}
+              className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+              style={{ transformStyle: "preserve-3d" }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+                {/* Image Side */}
+                <div className="relative h-64 lg:h-full">
+                  <Image
+                    src={galleryImages[selectedProduct].src}
+                    alt={galleryImages[selectedProduct].alt}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-black/30"></div>
+                </div>
+
+                {/* Content Side */}
+                <div className="p-8 lg:p-12 flex flex-col justify-center">
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                      {galleryImages[selectedProduct].title}
+                    </h2>
+                    <p className="text-gray-600 mb-6 leading-relaxed">
+                      {galleryImages[selectedProduct].description}
+                    </p>
+
+                    <div className="space-y-3 mb-8">
+                      <h3 className="text-lg font-semibold text-gray-900">Key Benefits:</h3>
+                      {galleryImages[selectedProduct].benefits.map((benefit, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.4 + index * 0.1 }}
+                          className="flex items-center space-x-3"
+                        >
+                          <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                          <span className="text-gray-700">{benefit}</span>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    <div className="flex space-x-4">
+                      <Button className="bg-primary hover:bg-primary/90 text-white flex-1">
+                        Learn More
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={handleCloseModal}
+                        className="border-gray-300 hover:bg-gray-50"
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </div>
     </section>
   );
