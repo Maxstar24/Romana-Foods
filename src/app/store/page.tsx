@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Filter, Search, Heart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { CartButton } from '@/components/cart/CartComponents';
 
 interface Product {
   id: string;
@@ -94,10 +96,7 @@ export default function StorePage() {
                 <Heart className="h-4 w-4" />
                 <span className="hidden sm:inline">Wishlist</span>
               </Button>
-              <Button className="flex items-center space-x-2 bg-primary hover:bg-primary/90">
-                <ShoppingCart className="h-4 w-4" />
-                <span className="hidden sm:inline">Cart (0)</span>
-              </Button>
+              <CartButton />
             </div>
           </div>
         </div>
@@ -210,6 +209,8 @@ export default function StorePage() {
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const { addItem } = useCart();
+  
   const formatPrice = (price: string | number) => {
     const numericPrice = typeof price === 'string' ? parseFloat(price) : price;
     return new Intl.NumberFormat('en-TZ', {
@@ -219,9 +220,25 @@ function ProductCard({ product }: { product: Product }) {
     }).format(numericPrice);
   };
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const numericPrice = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
+    
+    addItem({
+      productId: product.id,
+      name: product.name,
+      price: numericPrice,
+      image: product.images[0] || '',
+      inventory: product.inventory,
+      slug: product.slug,
+    });
+  };
+
   return (
-    <Link href={`/store/product/${product.slug}`}>
-      <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
+    <Card className="group hover:shadow-lg transition-all duration-300 h-full">
+      <Link href={`/store/product/${product.slug}`} className="block">
         <div className="relative overflow-hidden rounded-t-lg">
           {product.images.length > 0 ? (
             <Image
@@ -251,28 +268,29 @@ function ProductCard({ product }: { product: Product }) {
             {product.description}
           </CardDescription>
         </CardHeader>
+      </Link>
         
-        <CardContent className="pt-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-xl font-bold text-primary">
-                {formatPrice(product.price)}
-              </span>
-              <p className="text-xs text-gray-500 mt-1">
-                {product.inventory > 0 ? `${product.inventory} in stock` : 'Out of stock'}
-              </p>
-            </div>
-            <Button 
-              size="sm" 
-              className="bg-primary hover:bg-primary/90"
-              disabled={product.inventory === 0}
-            >
-              <ShoppingCart className="h-4 w-4 mr-1" />
-              Add
-            </Button>
+      <CardContent className="pt-0">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="text-xl font-bold text-primary">
+              {formatPrice(product.price)}
+            </span>
+            <p className="text-xs text-gray-500 mt-1">
+              {product.inventory > 0 ? `${product.inventory} in stock` : 'Out of stock'}
+            </p>
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+          <Button 
+            size="sm" 
+            className="bg-primary hover:bg-primary/90"
+            disabled={product.inventory === 0}
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className="h-4 w-4 mr-1" />
+            Add
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 } 

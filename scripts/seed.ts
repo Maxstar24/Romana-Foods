@@ -7,13 +7,13 @@ async function main() {
   console.log('🌱 Starting database seeding...');
 
   // Create admin user
-  const hashedAdminPassword = await bcrypt.hash('admin123', 12);
+  const hashedAdminPassword = await bcrypt.hash('Romana2025!Admin$', 12);
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@romana.co.tz' },
+    where: { email: 'admin@romana-natural-products.org' },
     update: {},
     create: {
-      email: 'admin@romana.co.tz',
-      name: 'Admin User',
+      email: 'admin@romana-natural-products.org',
+      name: 'Romana Foods Admin',
       password: hashedAdminPassword,
       role: 'ADMIN',
       phone: '+255767266355',

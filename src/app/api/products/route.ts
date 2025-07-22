@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const search = searchParams.get('search');
+    const lowStock = searchParams.get('lowStock') === 'true';
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
 
@@ -35,6 +36,12 @@ export async function GET(request: NextRequest) {
           },
         },
       ];
+    }
+
+    if (lowStock) {
+      where.inventory = {
+        lte: 10,
+      };
     }
 
     // Fetch products

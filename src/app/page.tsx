@@ -9,6 +9,7 @@ import { Leaf, Heart, Users, Globe, ArrowRight, Mail, Phone, MapPin, CheckCircle
 import Image from 'next/image';
 import Link from 'next/link';
 import AuthButton from '@/components/ui/AuthButton';
+import { CartButton } from '@/components/cart/CartComponents';
 
 function ClientOnly({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -118,7 +119,10 @@ function Header() {
             </div>
           </div>
           
-          <AuthButton />
+          <div className="flex items-center space-x-4">
+            <CartButton />
+            <AuthButton />
+          </div>
         </div>
       </div>
     </nav>
