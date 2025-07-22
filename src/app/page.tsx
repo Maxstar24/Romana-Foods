@@ -712,17 +712,17 @@ function TeamSection() {
 
   const team = [
     {
-      name: 'Chief Operating Officer',
-      role: 'Operations & Strategy',
-      description: 'With extensive education from Italy and deep expertise in sustainable agriculture, our COO leads our operational excellence and strategic partnerships across East Africa.',
+      name: 'Jeremy Moye',
+      role: 'Chief Operating Officer',
+      description: 'With extensive education from Italy and deep expertise in sustainable agriculture, Jeremy leads our operational excellence and strategic partnerships across East Africa.',
       image: '/images/team/coo.jpeg',
       education: 'Educated in Italy',
       expertise: 'Sustainable Agriculture & Operations',
     },
     {
-      name: 'Chief Financial Officer',
-      role: 'Finance & Growth',
-      description: 'Bringing valuable experience from BCG and Ascent, our CFO drives financial strategy and business development to scale our impact across communities.',
+      name: 'Joel Moye',
+      role: 'Chief Financial Officer',
+      description: 'Bringing valuable experience from BCG and Ascent, Joel drives financial strategy and business development to scale our impact across communities.',
       image: '/images/team/cfo.jpg',
       experience: 'Former BCG & Ascent',
       expertise: 'Financial Strategy & Business Development',
