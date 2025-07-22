@@ -69,14 +69,14 @@ function Header() {
   return (
     <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-green-200 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <Image 
               src="/images/logos/Romana_Logo_page-0001-removebg-preview.png" 
               alt="Romana Logo" 
-              width={160} 
-              height={64} 
-              className="h-14 w-auto" 
+              width={240} 
+              height={96} 
+              className="h-16 w-auto" 
               priority
             />
           </div>
@@ -117,7 +117,7 @@ function HeroSection() {
   });
 
   return (
-    <section id="home" ref={ref} className="pt-20 pb-16 bg-organic min-h-screen flex items-center">
+    <section id="home" ref={ref} className="pt-24 pb-16 bg-organic min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -253,21 +253,22 @@ function AboutSection() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="relative"
           >
-            <div className="relative w-full h-96 rounded-2xl overflow-hidden shadow-xl">
+            <div className="relative w-full h-[500px] rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src="/images/products/child.jpeg"
                 alt="From Heart to Health - Tanzanian Natural Beauty"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 text-white">
-                <div className="flex items-center mb-2">
-                  <Heart className="h-6 w-6 text-red-400 mr-2" />
-                  <p className="text-lg font-semibold">From Heart to Health</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent"></div>
+              <div className="absolute bottom-8 left-8 text-white">
+                <div className="flex items-center mb-3">
+                  <Heart className="h-7 w-7 text-red-400 mr-3" />
+                  <p className="text-xl font-bold">From Heart to Health</p>
                 </div>
-                <p className="text-green-200 font-medium">Tanzanian Natural Beauty</p>
+                <p className="text-green-200 font-semibold text-lg">Tanzanian Natural Beauty</p>
               </div>
             </div>
           </motion.div>
