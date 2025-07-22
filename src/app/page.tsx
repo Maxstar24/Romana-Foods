@@ -146,13 +146,13 @@ function HeroSection() {
               </h1>
               <p className="text-xl text-gray-600 leading-relaxed">
                 Discover our range of organic, natural products designed to nourish your body and delight your senses. 
-                We're committed to making healthy eating accessible and affordable for all.
+                We&apos;re committed to making healthy eating accessible and affordable for all.
               </p>
             </div>
             
             <p className="text-lg text-gray-700 leading-relaxed">
               At Romana Natural Products, we believe in the power of nature to transform lives. 
-              Through innovative food production and sustainable farming practices, we're building 
+              Through innovative food production and sustainable farming practices, we&apos;re building 
               a healthier future for communities across Tanzania and beyond.
             </p>
             
@@ -250,7 +250,7 @@ function AboutSection() {
               <p className="text-gray-700 leading-relaxed">
                 From our state-of-the-art processing facilities to our commitment to zero-waste 
                 packaging, every aspect of our operation is designed with sustainability in mind. 
-                We believe that caring for our planet and our people isn't just good business—it's the right thing to do.
+                We believe that caring for our planet and our people isn&apos;t just good business—it&apos;s the right thing to do.
               </p>
             </div>
             
@@ -805,7 +805,7 @@ function ContactSection() {
         >
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Get in Touch</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Ready to join our mission? We'd love to hear from you. Reach out to learn more about our products, partnerships, or career opportunities.
+            Ready to join our mission? We&apos;d love to hear from you. Reach out to learn more about our products, partnerships, or career opportunities.
           </p>
         </motion.div>
 
@@ -892,7 +892,7 @@ function ContactSection() {
               <CardHeader>
                 <CardTitle className="text-2xl text-gray-900">Send us a Message</CardTitle>
                 <CardDescription>
-                  We'll get back to you within 24 hours.
+                  We&apos;ll get back to you within 24 hours.
                 </CardDescription>
               </CardHeader>
               <CardContent>
