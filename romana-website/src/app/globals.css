@@ -123,4 +123,13 @@
   .bg-earth {
     background: linear-gradient(135deg, oklch(0.55 0.12 45), oklch(0.45 0.18 135));
   }
+  
+  /* 3D Card Flip Effects */
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
 }

@@ -446,35 +446,66 @@ function ProductGallerySection() {
     triggerOnce: true,
   });
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [flippedCards, setFlippedCards] = useState<number[]>([]);
+
   const galleryImages = [
     { 
       src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.09.jpeg',
       alt: 'Fresh Organic Juice Collection',
+      title: 'Fresh Organic Juices',
+      description: 'Pure, natural juices packed with vitamins'
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.12.jpeg',
       alt: 'Premium Natural Products',
+      title: 'Premium Natural Products',
+      description: 'High-quality organic products for health'
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-20 at 19.51.14.jpeg',
       alt: 'Healthy Organic Foods',
+      title: 'Healthy Organic Foods',
+      description: 'Wholesome foods for better nutrition'
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.48.jpeg',
       alt: 'Superfood Blends',
+      title: 'Superfood Blends',
+      description: 'Nutrient-dense superfoods for energy'
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.50.jpeg',
       alt: 'Natural Health Products',
+      title: 'Natural Health Products',
+      description: 'Supporting your wellness journey naturally'
     },
     { 
       src: '/images/products/WhatsApp Image 2025-07-21 at 19.03.53.jpeg',
       alt: 'Organic Product Range',
+      title: 'Organic Product Range',
+      description: 'Complete selection of organic goodness'
     },
   ];
 
+  const handleCardClick = (index: number) => {
+    setFlippedCards(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  // Auto-scroll carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prev => (prev + 1) % galleryImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [galleryImages.length]);
+
   return (
-    <section ref={ref} className="py-20 bg-green-50">
+    <section ref={ref} className="py-20 bg-green-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -484,28 +515,83 @@ function ProductGallerySection() {
         >
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Product Gallery</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Take a closer look at our beautiful, natural products crafted with care and passion.
+            Take a closer look at our beautiful, natural products crafted with care and passion. Tap on any card to explore!
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {galleryImages.map((image, index) => (
-            <motion.div
+        {/* Carousel Container */}
+        <div className="relative">
+          <motion.div 
+            className="flex gap-6"
+            animate={{ x: `-${currentIndex * (300 + 24)}px` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            style={{ width: `${galleryImages.length * (300 + 24)}px` }}
+          >
+            {galleryImages.map((image, index) => (
+              <motion.div
+                key={index}
+                className="relative w-72 h-80 cursor-pointer"
+                onClick={() => handleCardClick(index)}
+                whileHover={{ y: -10 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Card Container with 3D flip effect */}
+                <motion.div
+                  className="relative w-full h-full preserve-3d"
+                  animate={{ rotateY: flippedCards.includes(index) ? 180 : 0 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* Front Side */}
+                  <div 
+                    className="absolute inset-0 backface-hidden rounded-xl overflow-hidden shadow-lg"
+                    style={{ backfaceVisibility: "hidden" }}
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover"
+                      sizes="300px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <h3 className="text-lg font-bold mb-1">{image.title}</h3>
+                      <p className="text-sm opacity-90">Tap to learn more</p>
+                    </div>
+                  </div>
+
+                  {/* Back Side */}
+                  <div 
+                    className="absolute inset-0 backface-hidden rounded-xl bg-gradient-to-br from-primary to-green-600 p-6 flex flex-col justify-center items-center text-white shadow-lg"
+                    style={{ 
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)"
+                    }}
+                  >
+                    <Leaf className="h-12 w-12 mb-4 opacity-80" />
+                    <h3 className="text-xl font-bold mb-3 text-center">{image.title}</h3>
+                    <p className="text-center text-sm opacity-90 leading-relaxed">{image.description}</p>
+                    <Button className="mt-4 bg-white text-primary hover:bg-green-50">
+                      Learn More
+                    </Button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Navigation Dots */}
+        <div className="flex justify-center mt-8 space-x-2">
+          {galleryImages.map((_, index) => (
+            <button
               key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="relative h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </motion.div>
+              onClick={() => setCurrentIndex(index)}
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                index === currentIndex ? 'bg-primary' : 'bg-gray-300'
+              }`}
+            />
           ))}
         </div>
       </div>
@@ -738,8 +824,13 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="flex items-center">
-              <Leaf className="h-8 w-8 text-primary mr-2" />
-              <span className="text-2xl font-bold">Romana</span>
+              <Image 
+                src="/images/logos/Romana_Logo_page-0001-removebg-preview.png" 
+                alt="Romana Logo" 
+                width={120} 
+                height={48} 
+                className="h-12 w-auto mr-3" 
+              />
             </div>
             <p className="text-gray-400 leading-relaxed">
               Empowering communities through innovative food production and sustainable farming practices.
