@@ -35,7 +35,7 @@ interface Order {
     phone?: string;
   };
   status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
+  paymentStatus: 'PENDING' | 'CONFIRMED' | 'FAILED';
   paymentMethod?: string;
   address: {
     name: string;
@@ -168,12 +168,10 @@ export default function OrderDetailPage() {
     switch (status) {
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
-      case 'PAID':
-        return 'bg-green-100 text-green-800';
+      case 'CONFIRMED':
+        return 'bg-green-100 text-green-800 border-green-200';
       case 'FAILED':
         return 'bg-red-100 text-red-800';
-      case 'REFUNDED':
-        return 'bg-gray-100 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -366,9 +364,8 @@ export default function OrderDetailPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="PENDING">Pending</SelectItem>
-                      <SelectItem value="PAID">Paid</SelectItem>
+                      <SelectItem value="CONFIRMED">Confirmed</SelectItem>
                       <SelectItem value="FAILED">Failed</SelectItem>
-                      <SelectItem value="REFUNDED">Refunded</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
