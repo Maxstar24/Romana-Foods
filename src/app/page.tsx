@@ -107,11 +107,11 @@ function Header() {
               <Link href="/store" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
                 Store
               </Link>
-              <Link href="#products" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-                Products
+              <Link href="/orders" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                My Orders
               </Link>
-              <Link href="#team" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
-                Team
+              <Link href="/track" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
+                Track Order
               </Link>
               <Link href="#contact" className="text-gray-900 hover:text-primary px-3 py-2 text-sm font-medium transition-colors">
                 Contact

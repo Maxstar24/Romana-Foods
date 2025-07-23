@@ -25,6 +25,7 @@ interface Order {
   id: string;
   orderNumber: string;
   qrCode: string;
+  trackingHash: string;
   status: string;
   paymentStatus: string;
   subtotal: number;
@@ -82,6 +83,46 @@ export default function OrderPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showQRCode, setShowQRCode] = useState(false);
+
+  const downloadQRCode = () => {
+    if (!order) return;
+    
+    const link = document.createElement('a');
+    link.href = order.qrCode;
+    link.download = `romana-order-${order.orderNumber}-qr.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadReceipt = async () => {
+    if (!order) return;
+    
+    try {
+      const response = await fetch(`/api/orders/${order.orderNumber}/receipt`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `romana-receipt-${order.orderNumber}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+    }
+  };
+
+  const copyTrackingInfo = () => {
+    if (!order) return;
+    
+    const trackingInfo = `Order: ${order.orderNumber}\nTracking URL: ${window.location.origin}/track\nTracking Hash: ${order.trackingHash || 'Not available'}`;
+    navigator.clipboard.writeText(trackingInfo);
+  };
 
   useEffect(() => {
     if (orderNumber) {
@@ -193,6 +234,16 @@ export default function OrderPage() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button variant="outline" onClick={copyTrackingInfo}>
+                <Package className="h-4 w-4 mr-2" />
+                Copy Tracking Info
+              </Button>
+              {order.status === 'DELIVERED' && (
+                <Button onClick={downloadReceipt}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Receipt
+                </Button>
+              )}
               <Badge className={statusColors[order.status]}>
                 <StatusIcon className="h-3 w-3 mr-1" />
                 {order.status}
@@ -294,12 +345,20 @@ export default function OrderPage() {
                   />
                 </div>
                 <p className="text-sm text-gray-600 mb-4">
-                  Show this QR code for quick order lookup
+                  Show this QR code for quick order lookup or delivery verification
                 </p>
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download QR Code
-                </Button>
+                <div className="space-y-2">
+                  <Button variant="outline" size="sm" onClick={downloadQRCode} className="w-full">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download QR Code
+                  </Button>
+                  {order.trackingHash && (
+                    <div className="text-xs text-gray-500 mt-4">
+                      <p className="font-medium">Tracking Hash:</p>
+                      <p className="font-mono break-all">{order.trackingHash.substring(0, 16)}...</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
 

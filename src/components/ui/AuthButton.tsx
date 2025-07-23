@@ -3,7 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, Settings, ShoppingBag } from 'lucide-react';
+import { User, LogOut, Settings, ShoppingBag, Package, Search } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 export default function AuthButton() {
@@ -96,6 +96,24 @@ export default function AuthButton() {
           >
             <ShoppingBag className="h-4 w-4 mr-3" />
             Store
+          </Link>
+
+          <Link
+            href="/orders"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            onClick={() => setShowDropdown(false)}
+          >
+            <Package className="h-4 w-4 mr-3" />
+            My Orders
+          </Link>
+
+          <Link
+            href="/track"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+            onClick={() => setShowDropdown(false)}
+          >
+            <Search className="h-4 w-4 mr-3" />
+            Track Order
           </Link>
 
           {session.user?.role === 'ADMIN' && (
