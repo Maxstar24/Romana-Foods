@@ -124,7 +124,7 @@ export default function NewProductPage() {
       const productData = {
         ...formData,
         slug,
-        price: parseFloat(formData.price) * 100, // Convert to cents
+        price: parseFloat(formData.price), // Price is already in TZS
         inventory: parseInt(formData.inventory),
         weight: parseFloat(formData.weight),
       };

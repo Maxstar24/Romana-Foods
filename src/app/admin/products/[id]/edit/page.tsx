@@ -85,7 +85,7 @@ export default function EditProductPage() {
         setFormData({
           name: prod.name,
           description: prod.description,
-          price: (prod.price / 100).toString(), // Convert from cents
+          price: prod.price.toString(), // Price is already in TZS
           categoryId: prod.category.id,
           inventory: prod.inventory.toString(),
           weight: prod.weight.toString(),
@@ -168,7 +168,7 @@ export default function EditProductPage() {
       const productData = {
         ...formData,
         slug,
-        price: parseFloat(formData.price) * 100, // Convert to cents
+        price: parseFloat(formData.price), // Price is already in TZS
         inventory: parseInt(formData.inventory),
         weight: parseFloat(formData.weight),
       };
