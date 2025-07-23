@@ -20,7 +20,8 @@ import {
   MapPin,
   QrCode,
   Receipt,
-  ArrowLeft
+  ArrowLeft,
+  Home
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -157,6 +158,12 @@ export default function OrdersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="mr-2">
+                  <Home className="h-4 w-4 mr-2" />
+                  Home
+                </Button>
+              </Link>
               <Link href="/store">
                 <Button variant="ghost" size="sm" className="mr-4">
                   <ArrowLeft className="h-4 w-4 mr-2" />
