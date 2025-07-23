@@ -136,6 +136,11 @@ export default function OrdersPage() {
     return matchesSearch && matchesStatus;
   });
 
+  const viewReceipt = (orderNumber: string) => {
+    const receiptUrl = `/api/orders/${orderNumber}/receipt`;
+    window.open(receiptUrl, '_blank');
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-organic flex items-center justify-center">
@@ -338,9 +343,13 @@ export default function OrdersPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                           {order.status === 'DELIVERED' && (
-                            <Button size="sm" variant="outline">
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => viewReceipt(order.orderNumber)}
+                            >
                               <Receipt className="h-4 w-4 mr-2" />
-                              Download Receipt
+                              View Receipt
                             </Button>
                           )}
                           <Button size="sm" variant="outline">

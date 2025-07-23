@@ -100,20 +100,11 @@ export default function OrderPage() {
     if (!order) return;
     
     try {
-      const response = await fetch(`/api/orders/${order.orderNumber}/receipt`);
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `romana-receipt-${order.orderNumber}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }
+      // Open receipt in new tab instead of downloading
+      const receiptUrl = `/api/orders/${order.orderNumber}/receipt`;
+      window.open(receiptUrl, '_blank');
     } catch (error) {
-      console.error('Error downloading receipt:', error);
+      console.error('Error opening receipt:', error);
     }
   };
 
@@ -241,7 +232,7 @@ export default function OrderPage() {
               {order.status === 'DELIVERED' && (
                 <Button onClick={downloadReceipt}>
                   <Download className="h-4 w-4 mr-2" />
-                  Download Receipt
+                  View Receipt
                 </Button>
               )}
               <Badge className={statusColors[order.status]}>
