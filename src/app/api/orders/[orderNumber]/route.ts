@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { orderNumber: string } }
+  { params }: { params: Promise<{ orderNumber: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,7 +17,7 @@ export async function GET(
       );
     }
 
-    const { orderNumber } = params;
+    const { orderNumber } = await params;
 
     // Build where clause based on user role
     const where = session.user.role === 'ADMIN' 
@@ -76,7 +76,7 @@ export async function GET(
 // PATCH endpoint for updating order status (admin only)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { orderNumber: string } }
+  { params }: { params: Promise<{ orderNumber: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -88,7 +88,7 @@ export async function PATCH(
       );
     }
 
-    const { orderNumber } = params;
+    const { orderNumber } = await params;
     const body = await request.json();
     const { status, paymentStatus, adminNotes } = body;
 
