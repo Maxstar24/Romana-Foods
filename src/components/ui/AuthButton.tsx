@@ -51,7 +51,10 @@ export default function AuthButton() {
   }
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
+    const confirmed = confirm('Are you sure you want to sign out?');
+    if (confirmed) {
+      await signOut({ callbackUrl: '/store' });
+    }
   };
 
   return (
