@@ -151,7 +151,7 @@ export default function OrderDetailPage() {
     return new Intl.NumberFormat('en-TZ', {
       style: 'currency',
       currency: 'TZS',
-    }).format(amount / 100);
+    }).format(amount); // Amount is already in TZS
   };
 
   const getStatusColor = (status: string) => {

@@ -38,7 +38,7 @@ export function CartSidebar() {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(price / 100); // Convert from cents to main currency unit
+    }).format(price); // Price is already in TZS, no conversion needed
   };
 
   return (
@@ -200,7 +200,7 @@ export function CartSummary() {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(price / 100); // Convert from cents to main currency unit
+    }).format(price); // Price is already in TZS, no conversion needed
   };
 
   if (items.length === 0) {

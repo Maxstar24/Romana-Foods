@@ -136,7 +136,7 @@ export default function OrdersManagementPage() {
     return new Intl.NumberFormat('en-TZ', {
       style: 'currency',
       currency: 'TZS',
-    }).format(amount / 100);
+    }).format(amount); // Amount is already in TZS
   };
 
   if (status === 'loading' || loading) {
