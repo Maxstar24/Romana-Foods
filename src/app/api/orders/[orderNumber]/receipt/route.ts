@@ -73,12 +73,11 @@ export async function GET(
     // Generate HTML receipt
     const receiptHtml = generateReceiptHTML(order);
 
-    // In a real implementation, you would use a PDF generation library like puppeteer or jsPDF
-    // For now, we'll return the HTML content
+    // Return HTML content that can be viewed in browser or printed as PDF
     return new Response(receiptHtml, {
       headers: {
-        'Content-Type': 'text/html',
-        'Content-Disposition': `attachment; filename="romana-receipt-${orderNumber}.html"`,
+        'Content-Type': 'text/html; charset=utf-8',
+        'Content-Disposition': `inline; filename="romana-receipt-${orderNumber}.html"`,
       },
     });
 
