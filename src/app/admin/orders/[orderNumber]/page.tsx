@@ -37,22 +37,13 @@ interface Order {
   status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
   paymentMethod?: string;
-  shippingAddress: {
-    fullName: string;
+  address: {
+    name: string;
     phone: string;
     street: string;
     city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-  };
-  billingAddress?: {
-    fullName: string;
-    phone: string;
-    street: string;
-    city: string;
-    state: string;
-    postalCode: string;
+    region: string;
+    zipCode?: string;
     country: string;
   };
   items: OrderItem[];
@@ -329,27 +320,14 @@ export default function OrderDetailPage() {
                   <div>
                     <h4 className="font-medium mb-2">Shipping Address</h4>
                     <div className="text-sm space-y-1">
-                      <p>{order.shippingAddress.fullName}</p>
-                      <p>{order.shippingAddress.street}</p>
-                      <p>{order.shippingAddress.city}, {order.shippingAddress.state}</p>
-                      <p>{order.shippingAddress.postalCode}</p>
-                      <p>{order.shippingAddress.country}</p>
-                      <p>{order.shippingAddress.phone}</p>
+                      <p>{order.address.name}</p>
+                      <p>{order.address.street}</p>
+                      <p>{order.address.city}, {order.address.region}</p>
+                      {order.address.zipCode && <p>{order.address.zipCode}</p>}
+                      <p>{order.address.country}</p>
+                      {order.address.phone && <p>{order.address.phone}</p>}
                     </div>
                   </div>
-                  {order.billingAddress && (
-                    <div>
-                      <h4 className="font-medium mb-2">Billing Address</h4>
-                      <div className="text-sm space-y-1">
-                        <p>{order.billingAddress.fullName}</p>
-                        <p>{order.billingAddress.street}</p>
-                        <p>{order.billingAddress.city}, {order.billingAddress.state}</p>
-                        <p>{order.billingAddress.postalCode}</p>
-                        <p>{order.billingAddress.country}</p>
-                        <p>{order.billingAddress.phone}</p>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
