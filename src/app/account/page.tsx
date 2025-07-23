@@ -96,7 +96,7 @@ export default function AccountPage() {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(price / 100); // Convert from cents to main currency unit
+    }).format(price); // Price is already in TZS, no conversion needed
   };
 
   const formatDate = (dateString: string) => {
