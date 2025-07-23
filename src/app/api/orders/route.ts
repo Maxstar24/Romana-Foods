@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
       if (product.inventory < item.quantity) {
         return NextResponse.json(
-          { error: `Insufficient inventory for product: ${item.productId}` },
+          { error: `Insufficient inventory for product: ${item.productId}. Available: ${product.inventory}` },
           { status: 400 }
         );
       }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Create order items and update inventory
+      // Create order items and update inventory temporarily
       for (const item of items) {
         await tx.orderItem.create({
           data: {
@@ -112,7 +112,8 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        // Update product inventory
+        // For now, immediately decrease inventory on order creation
+        // TODO: Implement proper stock reservation system
         await tx.product.update({
           where: { id: item.productId },
           data: {

@@ -217,7 +217,7 @@ function ProductCard({ product }: { product: Product }) {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(numericPrice);
+    }).format(numericPrice / 100); // Convert from cents to main currency unit
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {

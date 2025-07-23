@@ -105,6 +105,36 @@ export async function PATCH(
 
     // Update order in transaction
     const updatedOrder = await prisma.$transaction(async (tx) => {
+      // Handle inventory changes based on status changes
+      if (status && status !== order.status) {
+        if (status === 'CANCELLED' && ['PENDING', 'CONFIRMED', 'PREPARING'].includes(order.status)) {
+          // Restore inventory for cancelled orders
+          const orderItems = await tx.orderItem.findMany({
+            where: { orderId: order.id },
+            select: { productId: true, quantity: true },
+          });
+
+          for (const item of orderItems) {
+            await tx.product.update({
+              where: { id: item.productId },
+              data: {
+                inventory: {
+                  increment: item.quantity,
+                },
+              },
+            });
+          }
+        }
+      }
+
+      // Handle payment status changes
+      if (paymentStatus && paymentStatus !== order.paymentStatus) {
+        if (paymentStatus === 'FAILED' && order.paymentStatus === 'PENDING') {
+          // If payment failed, we might want to restore inventory depending on business logic
+          // For now, we'll keep the inventory decremented until order is explicitly cancelled
+        }
+      }
+
       // Update the order
       const updated = await tx.order.update({
         where: { orderNumber },

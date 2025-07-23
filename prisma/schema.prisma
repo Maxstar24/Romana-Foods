@@ -74,18 +74,19 @@ model Category {
 
 // Product model
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  images      String[] // Array of image URLs
-  categoryId  String
-  inventory   Int      @default(0)
-  isActive    Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
-  weight      Decimal? @db.Decimal(8, 2) // in kg
-  unit        String?  // e.g., "bottle", "pack", "kg"
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  price        Decimal  @db.Decimal(10, 2)
+  images       String[] // Array of image URLs
+  categoryId   String
+  inventory    Int      @default(0)
+  reservedStock Int     @default(0) // Stock temporarily held for pending orders
+  isActive     Boolean  @default(true)
+  isFeatured   Boolean  @default(false)
+  weight       Decimal? @db.Decimal(8, 2) // in kg
+  unit         String?  // e.g., "bottle", "pack", "kg"
   
   // SEO fields
   metaTitle       String?

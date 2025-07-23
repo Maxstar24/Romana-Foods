@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { ArrowLeft, Plus, Search, Edit, Trash2, Package, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,6 +33,9 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [quickUpdateProduct, setQuickUpdateProduct] = useState<Product | null>(null);
+  const [newInventory, setNewInventory] = useState('');
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -86,12 +90,48 @@ export default function ProductsPage() {
     }
   };
 
+  const updateInventory = async () => {
+    if (!quickUpdateProduct || !newInventory) return;
+    
+    setUpdating(true);
+    try {
+      const response = await fetch(`/api/products/${quickUpdateProduct.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...quickUpdateProduct,
+          inventory: parseInt(newInventory),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(products.map(p => 
+          p.id === quickUpdateProduct.id 
+            ? { ...p, inventory: parseInt(newInventory) }
+            : p
+        ));
+        setQuickUpdateProduct(null);
+        setNewInventory('');
+      } else {
+        alert('Failed to update inventory');
+      }
+    } catch (error) {
+      console.error('Error updating inventory:', error);
+      alert('Failed to update inventory');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-TZ', {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(price);
+    }).format(price / 100); // Convert from cents to main currency unit
   };
 
   if (status === 'loading' || loading) {
@@ -211,9 +251,20 @@ export default function ProductsPage() {
                       <p className="text-lg font-bold text-primary">
                         {formatPrice(product.price)}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        Stock: {product.inventory}
-                      </p>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Stock:</span>
+                        <span className={`text-sm font-medium ${product.inventory <= 5 ? 'text-red-600' : 'text-green-600'}`}>
+                          {product.inventory}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setQuickUpdateProduct(product)}
+                          className="p-1 h-6 w-6"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
                   
@@ -239,6 +290,72 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Quick Inventory Update Modal */}
+      {quickUpdateProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Update Inventory</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="product-name">Product</Label>
+                <Input
+                  id="product-name"
+                  value={quickUpdateProduct.name}
+                  disabled
+                  className="bg-gray-50"
+                />
+              </div>
+              <div>
+                <Label htmlFor="current-inventory">Current Stock</Label>
+                <Input
+                  id="current-inventory"
+                  value={quickUpdateProduct.inventory}
+                  disabled
+                  className="bg-gray-50"
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-inventory">New Stock *</Label>
+                <Input
+                  id="new-inventory"
+                  type="number"
+                  value={newInventory}
+                  onChange={(e) => setNewInventory(e.target.value)}
+                  placeholder="Enter new stock quantity"
+                  min="0"
+                />
+              </div>
+            </div>
+            <div className="flex space-x-3 mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setQuickUpdateProduct(null);
+                  setNewInventory('');
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={updateInventory}
+                disabled={updating || !newInventory}
+                className="flex-1"
+              >
+                {updating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  'Update Stock'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

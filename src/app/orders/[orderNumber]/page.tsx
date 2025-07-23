@@ -111,7 +111,7 @@ export default function OrderPage() {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(price);
+    }).format(price / 100); // Convert from cents to main currency unit
   };
 
   const formatDate = (dateString: string) => {

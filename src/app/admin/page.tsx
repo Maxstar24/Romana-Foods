@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       style: 'currency',
       currency: 'TZS',
       minimumFractionDigits: 0,
-    }).format(price);
+    }).format(price / 100); // Convert from cents to main currency unit
   };
 
   const formatDate = (dateString: string) => {
@@ -163,6 +163,18 @@ export default function AdminDashboard() {
                 <Link href="/">
                   <Eye className="h-4 w-4 mr-2" />
                   View Site
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/admin/products">
+                  <Package className="h-4 w-4 mr-2" />
+                  Manage Products
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/admin/orders">
+                  <Package className="h-4 w-4 mr-2" />
+                  Manage Orders
                 </Link>
               </Button>
               <Button asChild>
