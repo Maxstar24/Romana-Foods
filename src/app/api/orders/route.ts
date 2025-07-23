@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     const qrCode = await generateQRCode(orderNumber);
 
     // Create order with transaction
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: any) => {
       // Create the order
       const newOrder = await tx.order.create({
         data: {

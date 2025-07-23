@@ -16,12 +16,25 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
+interface DeliveryRegion {
+  id: string;
+  name: string;
+  subregions: DeliverySubregion[];
+}
+
+interface DeliverySubregion {
+  id: string;
+  name: string;
+  deliveryFee: number;
+}
+
 interface ShippingAddress {
   name: string;
   phone: string;
   street: string;
   city: string;
   region: string;
+  subregion: string;
   zipCode: string;
   country: string;
 }
@@ -37,6 +50,8 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [deliveryRegions, setDeliveryRegions] = useState<DeliveryRegion[]>([]);
+  const [selectedSubregions, setSelectedSubregions] = useState<DeliverySubregion[]>([]);
 
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
     name: session?.user?.name || '',
@@ -44,6 +59,7 @@ export default function CheckoutPage() {
     street: '',
     city: '',
     region: '',
+    subregion: '',
     zipCode: '',
     country: 'Tanzania',
   });
@@ -52,7 +68,52 @@ export default function CheckoutPage() {
     type: 'cash_on_delivery',
   });
 
-  const [shippingCost, setShippingCost] = useState(5000); // Default shipping cost
+  const [shippingCost, setShippingCost] = useState(0); // Dynamic shipping cost
+  
+  // Fetch delivery regions on component mount
+  useEffect(() => {
+    const fetchDeliveryRegions = async () => {
+      try {
+        const response = await fetch('/api/delivery-regions');
+        if (response.ok) {
+          const data = await response.json();
+          setDeliveryRegions(data.regions);
+        }
+      } catch (error) {
+        console.error('Error fetching delivery regions:', error);
+      }
+    };
+    
+    fetchDeliveryRegions();
+  }, []);
+
+  // Update subregions when region changes
+  useEffect(() => {
+    if (shippingAddress.region) {
+      const selectedRegion = deliveryRegions.find(r => r.id === shippingAddress.region);
+      if (selectedRegion) {
+        setSelectedSubregions(selectedRegion.subregions);
+        // Reset subregion when region changes
+        setShippingAddress(prev => ({ ...prev, subregion: '' }));
+        setShippingCost(0);
+      }
+    } else {
+      setSelectedSubregions([]);
+      setShippingCost(0);
+    }
+  }, [shippingAddress.region, deliveryRegions]);
+
+  // Update shipping cost when subregion changes
+  useEffect(() => {
+    if (shippingAddress.subregion) {
+      const selectedSubregion = selectedSubregions.find(s => s.id === shippingAddress.subregion);
+      if (selectedSubregion) {
+        setShippingCost(selectedSubregion.deliveryFee);
+      }
+    } else {
+      setShippingCost(0);
+    }
+  }, [shippingAddress.subregion, selectedSubregions]);
 
   useEffect(() => {
     if (!session) {
@@ -74,42 +135,24 @@ export default function CheckoutPage() {
     }).format(price); // Price is already in TZS
   };
 
-  const calculateShippingCost = () => {
-    // Simple shipping calculation based on region
-    const regionCosts: Record<string, number> = {
-      'Dar es Salaam': 3000,
-      'Arusha': 5000,
-      'Mwanza': 6000,
-      'Dodoma': 5500,
-      'Mbeya': 7000,
-      'Tanga': 4500,
-      'Morogoro': 4000,
-      'Iringa': 6500,
-      'Tabora': 8000,
-      'Kilimanjaro': 5500,
-    };
-
-    const cost = regionCosts[shippingAddress.region] || 5000;
-    setShippingCost(cost);
-  };
-
-  useEffect(() => {
-    if (shippingAddress.region) {
-      calculateShippingCost();
-    }
-  }, [shippingAddress.region]);
-
   const handleSubmitOrder = async () => {
     setIsLoading(true);
     
     try {
+      // Get the region name for the address
+      const selectedRegion = deliveryRegions.find(r => r.id === shippingAddress.region);
+      const regionName = selectedRegion?.name || '';
+
       const orderData = {
         items: items.map(item => ({
           productId: item.productId,
           quantity: item.quantity,
           price: item.price,
         })),
-        shippingAddress,
+        shippingAddress: {
+          ...shippingAddress,
+          region: regionName, // Use region name for address display
+        },
         paymentMethod,
         subtotal: total,
         shippingCost,
@@ -236,16 +279,11 @@ export default function CheckoutPage() {
                         <SelectValue placeholder="Select region" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Dar es Salaam">Dar es Salaam</SelectItem>
-                        <SelectItem value="Arusha">Arusha</SelectItem>
-                        <SelectItem value="Mwanza">Mwanza</SelectItem>
-                        <SelectItem value="Dodoma">Dodoma</SelectItem>
-                        <SelectItem value="Mbeya">Mbeya</SelectItem>
-                        <SelectItem value="Tanga">Tanga</SelectItem>
-                        <SelectItem value="Morogoro">Morogoro</SelectItem>
-                        <SelectItem value="Iringa">Iringa</SelectItem>
-                        <SelectItem value="Tabora">Tabora</SelectItem>
-                        <SelectItem value="Kilimanjaro">Kilimanjaro</SelectItem>
+                        {deliveryRegions.map((region) => (
+                          <SelectItem key={region.id} value={region.id}>
+                            {region.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -259,6 +297,28 @@ export default function CheckoutPage() {
                     />
                   </div>
                 </div>
+
+                {/* Subregion Selection */}
+                {selectedSubregions.length > 0 && (
+                  <div>
+                    <Label htmlFor="subregion">Delivery Area *</Label>
+                    <Select 
+                      value={shippingAddress.subregion} 
+                      onValueChange={(value) => setShippingAddress({...shippingAddress, subregion: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select delivery area" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {selectedSubregions.map((subregion) => (
+                          <SelectItem key={subregion.id} value={subregion.id}>
+                            {subregion.name} - {formatPrice(subregion.deliveryFee)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -376,7 +436,7 @@ export default function CheckoutPage() {
                   className="w-full" 
                   size="lg"
                   onClick={handleSubmitOrder}
-                  disabled={isLoading || !shippingAddress.name || !shippingAddress.phone || !shippingAddress.street || !shippingAddress.city || !shippingAddress.region}
+                  disabled={isLoading || !shippingAddress.name || !shippingAddress.phone || !shippingAddress.street || !shippingAddress.city || !shippingAddress.region || !shippingAddress.subregion}
                 >
                   {isLoading ? 'Processing...' : 'Place Order'}
                 </Button>

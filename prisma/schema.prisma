@@ -38,19 +38,23 @@ enum UserRole {
 
 // Address model for shipping
 model Address {
-  id       String @id @default(cuid())
-  userId   String
-  name     String
-  street   String
-  city     String
-  region   String
-  zipCode  String?
-  country  String @default("Tanzania")
-  phone    String?
-  isDefault Boolean @default(false)
+  id              String @id @default(cuid())
+  userId          String
+  name            String
+  street          String
+  city            String
+  region          String
+  zipCode         String?
+  country         String @default("Tanzania")
+  phone           String?
+  isDefault       Boolean @default(false)
   
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders Order[]
+  // Link to delivery subregion for dynamic pricing
+  subregionId     String?
+  
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliverySubregion DeliverySubregion? @relation(fields: [subregionId], references: [id])
+  orders          Order[]
 
   @@map("addresses")
 }
@@ -199,4 +203,40 @@ model ContactSubmission {
   createdAt DateTime @default(now())
 
   @@map("contact_submissions")
+}
+
+// Delivery Regions
+model DeliveryRegion {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  code        String?   @unique // e.g., "DSM" for Dar es Salaam
+  description String?
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  subregions  DeliverySubregion[]
+
+  @@map("delivery_regions")
+}
+
+// Delivery Subregions (districts, areas within regions)
+model DeliverySubregion {
+  id          String         @id @default(cuid())
+  regionId    String
+  name        String
+  code        String?        // e.g., "KIN" for Kinondoni
+  description String?
+  deliveryFee Decimal        @db.Decimal(10, 2) // Delivery cost for this subregion
+  isActive    Boolean        @default(true)
+  sortOrder   Int            @default(0)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  region      DeliveryRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  addresses   Address[]
+
+  @@unique([regionId, name])
+  @@map("delivery_subregions")
 }

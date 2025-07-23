@@ -166,6 +166,18 @@ export default function AdminDashboard() {
                 </Link>
               </Button>
               <Button variant="outline" asChild>
+                <Link href="/admin/delivery-regions">
+                  <Package className="h-4 w-4 mr-2" />
+                  Delivery Regions
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/admin/categories">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Categories
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
                 <Link href="/admin/products">
                   <Package className="h-4 w-4 mr-2" />
                   Manage Products
