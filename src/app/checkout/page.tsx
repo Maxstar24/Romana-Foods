@@ -108,7 +108,7 @@ export default function CheckoutPage() {
     if (shippingAddress.subregion) {
       const selectedSubregion = selectedSubregions.find(s => s.id === shippingAddress.subregion);
       if (selectedSubregion) {
-        setShippingCost(selectedSubregion.deliveryFee);
+        setShippingCost(Number(selectedSubregion.deliveryFee));
       }
     } else {
       setShippingCost(0);
@@ -154,9 +154,9 @@ export default function CheckoutPage() {
           region: regionName, // Use region name for address display
         },
         paymentMethod,
-        subtotal: total,
-        shippingCost,
-        total: total + shippingCost,
+        subtotal: Number(total),
+        shippingCost: Number(shippingCost),
+        total: Number(total) + Number(shippingCost),
       };
 
       const response = await fetch('/api/orders', {
@@ -312,7 +312,7 @@ export default function CheckoutPage() {
                       <SelectContent>
                         {selectedSubregions.map((subregion) => (
                           <SelectItem key={subregion.id} value={subregion.id}>
-                            {subregion.name} - {formatPrice(subregion.deliveryFee)}
+                            {subregion.name} - {formatPrice(Number(subregion.deliveryFee))}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -428,7 +428,7 @@ export default function CheckoutPage() {
                   <Separator />
                   <div className="flex justify-between font-semibold">
                     <span>Total</span>
-                    <span className="text-primary">{formatPrice(total + shippingCost)}</span>
+                    <span className="text-primary">{formatPrice(Number(total) + Number(shippingCost))}</span>
                   </div>
                 </div>
 
