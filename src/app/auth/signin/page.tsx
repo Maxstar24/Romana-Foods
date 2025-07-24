@@ -212,7 +212,7 @@ export default function SignInPage() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200"
         >
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-2">Hello:</h4>
           <div className="text-xs text-gray-600 space-y-1">
             <div><strong>Welcome to Romana Natural Products</strong> </div>
             <div><strong>Glad your Back !</strong></div>
