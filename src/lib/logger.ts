@@ -181,7 +181,7 @@ class SecureLogger {
     console.log('\n🔧 DEV MODE - Password Reset Info:');
     console.log('📧 Email:', maskedEmail);
     console.log('🔑 Token (partial):', shortToken);
-    console.log('🔗 Reset URL:', `http://localhost:3000/auth/reset-password?token=${resetToken}`);
+    console.log('🔗 Reset URL:', `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`);
     console.log('⏰ Expires in 1 hour');
     console.log('⚠️  This information is only shown in development mode\n');
   }

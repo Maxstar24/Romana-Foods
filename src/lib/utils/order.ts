@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import QRCode from 'qrcode';
+import { getQRCodeBaseUrl } from '@/lib/config';
 
 // Generate unique order number
 export function generateOrderNumber(): string {
@@ -11,7 +12,8 @@ export function generateOrderNumber(): string {
 // Generate QR code for order tracking
 export async function generateQRCode(orderNumber: string): Promise<string> {
   try {
-    const trackingUrl = `${process.env.NEXTAUTH_URL}/track/${orderNumber}`;
+    // Use the correct base URL for QR codes
+    const trackingUrl = `${getQRCodeBaseUrl()}/track/${orderNumber}`;
     const qrCodeDataURL = await QRCode.toDataURL(trackingUrl, {
       errorCorrectionLevel: 'M',
       type: 'image/png',
