@@ -171,6 +171,16 @@ export default function SignInPage() {
                   )}
                 </Button>
 
+                {/* Forgot Password */}
+                <div className="text-center mt-4">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-sm text-gray-600 hover:text-primary transition-colors"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+
                 {/* Divider */}
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">

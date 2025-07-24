@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { User, LogOut, Settings, ShoppingBag, Package, Search } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { logAuth } from '@/lib/logger';
 
 export default function AuthButton() {
   const { data: session, status } = useSession();
@@ -53,7 +54,22 @@ export default function AuthButton() {
   const handleSignOut = async () => {
     const confirmed = confirm('Are you sure you want to sign out?');
     if (confirmed) {
-      await signOut({ callbackUrl: '/store' });
+      try {
+        // Log the logout event securely
+        logAuth.authEvent('LOGOUT', session?.user?.id);
+        
+        // Clear any local storage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Sign out with NextAuth
+        await signOut({ 
+          callbackUrl: '/',
+          redirect: true 
+        });
+      } catch (error) {
+        logAuth.error('AUTH_LOGOUT', error as Error, {}, session?.user?.id);
+      }
     }
   };
 

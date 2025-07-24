@@ -27,8 +27,23 @@ model User {
   // Customer relationships
   orders    Order[]
   addresses Address[]
+  passwordResets PasswordReset[]
 
   @@map("users")
+}
+
+// Password reset tokens
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_resets")
 }
 
 enum UserRole {
