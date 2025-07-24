@@ -127,7 +127,7 @@ export default function SignUpPage() {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Created!</h2>
             <p className="text-gray-600 mb-4">
-              Welcome to Romana! You're being signed in automatically...
+              Welcome to Romana! You&apos;re being signed in automatically...
             </p>
             <div className="flex items-center justify-center">
               <Loader2 className="h-5 w-5 animate-spin text-primary" />

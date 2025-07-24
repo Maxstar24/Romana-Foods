@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -330,9 +331,11 @@ export default function CategoriesPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       {category.image ? (
-                        <img
+                        <Image
                           src={category.image}
                           alt={category.name}
+                          width={48}
+                          height={48}
                           className="w-12 h-12 rounded-lg object-cover"
                         />
                       ) : (

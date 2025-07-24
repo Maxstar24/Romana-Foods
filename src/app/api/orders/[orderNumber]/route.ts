@@ -104,7 +104,7 @@ export async function PATCH(
     }
 
     // Update order in transaction
-    const updatedOrder = await prisma.$transaction(async (tx) => {
+    const updatedOrder = await prisma.$transaction(async (tx: typeof prisma) => {
       // Handle inventory changes based on status changes
       if (status && status !== order.status) {
         if (status === 'CANCELLED' && ['PENDING', 'CONFIRMED', 'PREPARING'].includes(order.status)) {

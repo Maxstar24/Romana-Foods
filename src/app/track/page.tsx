@@ -137,7 +137,7 @@ export default function TrackOrderPage() {
                       className="text-center text-lg font-mono"
                     />
                     <p className="text-sm text-gray-600">
-                      Your order number starts with 'RN' and can be found in your email confirmation
+                      Your order number starts with &apos;RN&apos; and can be found in your email confirmation
                     </p>
                   </div>
 
@@ -253,7 +253,7 @@ export default function TrackOrderPage() {
                   <p>• Your order number can be found in your email confirmation</p>
                   <p>• QR codes are included in your order receipt</p>
                   <p>• If you have an account, you can view all orders in <Link href="/orders" className="underline font-medium">My Orders</Link></p>
-                  <p>• Contact support if you're having trouble tracking your order</p>
+                  <p>• If you&apos;re having trouble tracking your order, contact support</p>
                 </div>
               </CardContent>
             </Card>

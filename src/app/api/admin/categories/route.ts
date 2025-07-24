@@ -75,10 +75,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ category });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating category:', error);
     
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'Category name or slug already exists' },
         { status: 400 }
@@ -133,10 +133,10 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ category });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating category:', error);
     
-    if (error.code === 'P2002') {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
       return NextResponse.json(
         { error: 'Category name or slug already exists' },
         { status: 400 }
@@ -172,7 +172,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Check if category has products
+    // Check if category exists
     const category = await prisma.category.findUnique({
       where: { id },
       include: {
