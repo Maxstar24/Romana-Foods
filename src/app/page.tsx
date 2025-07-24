@@ -1005,7 +1005,7 @@ function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">Connect</h3>
             <ul className="space-y-2 text-gray-400">
-              <li>info@romana.co.tz</li>
+              <li>admin@romana-natural-products.org | jeremythadeus98@gmail.com</li>
               <li>
                 <a href="https://wa.me/255767266355" className="hover:text-white transition-colors">
                   +255 767 266 355

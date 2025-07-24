@@ -214,8 +214,8 @@ export default function SignInPage() {
         >
           <h4 className="text-sm font-medium text-gray-700 mb-2">Demo Credentials:</h4>
           <div className="text-xs text-gray-600 space-y-1">
-            <div><strong>Admin:</strong> admin@romana.co.tz / admin123</div>
-            <div><strong>Customer:</strong> customer@example.com / password</div>
+            <div><strong>Welcome to Romana Natural Products</strong> </div>
+            <div><strong>Glad your Back !</strong></div>
           </div>
         </motion.div>
       </div>
