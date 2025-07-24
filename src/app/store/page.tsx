@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Filter, Search, Heart, Package } from 'lucide-react';
+import { ShoppingCart, Filter, Search, Heart, Package, Home } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { CartButton } from '@/components/cart/CartComponents';
 
@@ -92,6 +92,12 @@ export default function StorePage() {
               <p className="text-gray-600 mt-1">Fresh, organic products delivered to your door</p>
             </div>
             <div className="flex items-center space-x-4">
+              <Button variant="outline" asChild className="flex items-center space-x-2">
+                <Link href="/">
+                  <Home className="h-4 w-4" />
+                  <span className="hidden sm:inline">Home</span>
+                </Link>
+              </Button>
               <Button variant="outline" asChild className="flex items-center space-x-2">
                 <Link href="/orders">
                   <Package className="h-4 w-4" />
