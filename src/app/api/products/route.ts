@@ -123,6 +123,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if category exists
+    const categoryExists = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!categoryExists) {
+      return NextResponse.json(
+        { error: 'Category not found. Please select a valid category.' },
+        { status: 400 }
+      );
+    }
+
     // Check if slug already exists
     const existingProduct = await prisma.product.findUnique({
       where: { slug },
