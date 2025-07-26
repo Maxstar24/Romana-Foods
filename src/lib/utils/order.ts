@@ -12,8 +12,8 @@ export function generateOrderNumber(): string {
 // Generate QR code for order tracking
 export async function generateQRCode(orderNumber: string): Promise<string> {
   try {
-    // Use the correct base URL for QR codes
-    const trackingUrl = `${getQRCodeBaseUrl()}/track/${orderNumber}`;
+    // Use the correct base URL for QR codes - point to orders page instead of track
+    const trackingUrl = `${getQRCodeBaseUrl()}/orders/${orderNumber}`;
     const qrCodeDataURL = await QRCode.toDataURL(trackingUrl, {
       errorCorrectionLevel: 'M',
       type: 'image/png',

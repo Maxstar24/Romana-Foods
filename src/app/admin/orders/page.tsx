@@ -18,7 +18,7 @@ interface Order {
     name: string;
     email: string;
   };
-  status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   paymentStatus: 'PENDING' | 'CONFIRMED' | 'FAILED';
   total: number;
   createdAt: string;
@@ -40,7 +40,7 @@ const getStatusIcon = (status: string) => {
       return <Clock className="h-4 w-4" />;
     case 'CONFIRMED':
       return <CheckCircle className="h-4 w-4" />;
-    case 'PREPARING':
+    case 'PROCESSING':
       return <Package className="h-4 w-4" />;
     case 'SHIPPED':
       return <Truck className="h-4 w-4" />;
@@ -59,7 +59,7 @@ const getStatusColor = (status: string) => {
       return 'bg-yellow-100 text-yellow-800';
     case 'CONFIRMED':
       return 'bg-blue-100 text-blue-800';
-    case 'PREPARING':
+    case 'PROCESSING':
       return 'bg-purple-100 text-purple-800';
     case 'SHIPPED':
       return 'bg-orange-100 text-orange-800';
@@ -191,7 +191,7 @@ export default function OrdersManagementPage() {
                   <SelectItem value="ALL_STATUS">All Status</SelectItem>
                   <SelectItem value="PENDING">Pending</SelectItem>
                   <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                  <SelectItem value="PREPARING">Preparing</SelectItem>
+                  <SelectItem value="PROCESSING">Processing</SelectItem>
                   <SelectItem value="SHIPPED">Shipped</SelectItem>
                   <SelectItem value="DELIVERED">Delivered</SelectItem>
                   <SelectItem value="CANCELLED">Cancelled</SelectItem>

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Package, User, MapPin, Clock, DollarSign, FileText, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Package, User, MapPin, Clock, Save, Loader2, Printer } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -34,7 +34,7 @@ interface Order {
     email: string;
     phone?: string;
   };
-  status: 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   paymentStatus: 'PENDING' | 'CONFIRMED' | 'FAILED';
   paymentMethod?: string;
   address: {
@@ -138,6 +138,10 @@ export default function OrderDetailPage() {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-TZ', {
       style: 'currency',
@@ -151,7 +155,7 @@ export default function OrderDetailPage() {
         return 'bg-yellow-100 text-yellow-800';
       case 'CONFIRMED':
         return 'bg-blue-100 text-blue-800';
-      case 'PREPARING':
+      case 'PROCESSING':
         return 'bg-purple-100 text-purple-800';
       case 'SHIPPED':
         return 'bg-orange-100 text-orange-800';
@@ -190,20 +194,62 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link href="/admin/orders">
+    <>
+      <style jsx global>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          .print-area, .print-area * {
+            visibility: visible;
+          }
+          .print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+          .bg-gray-50 {
+            background: white !important;
+          }
+          .shadow-sm, .shadow {
+            box-shadow: none !important;
+          }
+          .border {
+            border: 1px solid #e5e7eb !important;
+          }
+        }
+      `}</style>
+      <div className="min-h-screen bg-gray-50 print-area">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b print:shadow-none">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Link href="/admin/orders" className="print:hidden">
                 <Button variant="ghost" size="sm" className="mr-4">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Orders
                 </Button>
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Order #{order.orderNumber}</h1>
+                              <h1 className="text-2xl font-bold text-gray-900">
+                Order {order.orderNumber}
+              </h1>
+              <div className="flex space-x-3">
+                <Button
+                  onClick={handlePrint}
+                  variant="outline"
+                  size="sm"
+                  className="print:hidden"
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Print Order
+                </Button>
+              </div>
                 <div className="flex items-center space-x-3 mt-2">
                   <Badge className={getStatusColor(order.status)}>
                     {order.status}
@@ -332,7 +378,7 @@ export default function OrderDetailPage() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-6 print:hidden">
             {/* Order Status Management */}
             <Card>
               <CardHeader>
@@ -348,7 +394,7 @@ export default function OrderDetailPage() {
                     <SelectContent>
                       <SelectItem value="PENDING">Pending</SelectItem>
                       <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                      <SelectItem value="PREPARING">Preparing</SelectItem>
+                      <SelectItem value="PROCESSING">Processing</SelectItem>
                       <SelectItem value="SHIPPED">Shipped</SelectItem>
                       <SelectItem value="DELIVERED">Delivered</SelectItem>
                       <SelectItem value="CANCELLED">Cancelled</SelectItem>
@@ -471,5 +517,6 @@ export default function OrderDetailPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }
