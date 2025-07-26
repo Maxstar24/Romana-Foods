@@ -33,7 +33,7 @@ interface ActiveDelivery {
     quantity: number;
   }>;
   total: number;
-  status: 'PENDING' | 'IN_TRANSIT' | 'DELIVERED';
+  status: 'PENDING' | 'SHIPPED' | 'DELIVERED';
 }
 
 export default function ActiveDeliveryPage() {

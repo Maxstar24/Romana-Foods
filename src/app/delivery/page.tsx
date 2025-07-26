@@ -30,6 +30,11 @@ interface TodayDelivery {
   address: string;
   status: string;
   estimatedDelivery: string;
+  total: number;
+  items: Array<{
+    name: string;
+    quantity: number;
+  }>;
 }
 
 export default function DeliveryDashboard() {
@@ -49,43 +54,33 @@ export default function DeliveryDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      // TODO: Replace with actual API calls
-      // For now, using mock data
-      setStats({
-        todayDeliveries: 8,
-        completedToday: 3,
-        pendingDeliveries: 5,
-        totalDistance: 45.2,
-      });
-
-      setTodayDeliveries([
-        {
-          id: '1',
-          orderNumber: 'RN1753536465158957',
-          customerName: 'John Doe',
-          address: 'Kinondoni, Dar es Salaam',
-          status: 'PENDING',
-          estimatedDelivery: '10:30 AM',
-        },
-        {
-          id: '2',
-          orderNumber: 'RN1753536465158958',
-          customerName: 'Jane Smith',
-          address: 'Ilala, Dar es Salaam',
-          status: 'IN_TRANSIT',
-          estimatedDelivery: '11:00 AM',
-        },
-        {
-          id: '3',
-          orderNumber: 'RN1753536465158959',
-          customerName: 'Mike Johnson',
-          address: 'Temeke, Dar es Salaam',
-          status: 'DELIVERED',
-          estimatedDelivery: '9:00 AM',
-        },
-      ]);
+      const response = await fetch('/api/delivery/dashboard');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data.stats);
+        setTodayDeliveries(data.todayDeliveries);
+      } else {
+        console.error('Failed to fetch dashboard data');
+        // Fallback to empty state
+        setStats({
+          todayDeliveries: 0,
+          completedToday: 0,
+          pendingDeliveries: 0,
+          totalDistance: 0,
+        });
+        setTodayDeliveries([]);
+      }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      // Fallback to empty state
+      setStats({
+        todayDeliveries: 0,
+        completedToday: 0,
+        pendingDeliveries: 0,
+        totalDistance: 0,
+      });
+      setTodayDeliveries([]);
     } finally {
       setLoading(false);
     }
@@ -95,7 +90,7 @@ export default function DeliveryDashboard() {
     switch (status) {
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
-      case 'IN_TRANSIT':
+      case 'SHIPPED':
         return 'bg-blue-100 text-blue-800';
       case 'DELIVERED':
         return 'bg-green-100 text-green-800';

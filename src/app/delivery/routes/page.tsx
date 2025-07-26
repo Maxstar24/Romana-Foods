@@ -36,7 +36,7 @@ interface DeliveryStop {
   address: string;
   coordinates: [number, number]; // [latitude, longitude]
   estimatedTime: string;
-  status: 'PENDING' | 'IN_TRANSIT' | 'DELIVERED';
+  status: 'PENDING' | 'SHIPPED' | 'DELIVERED';
   priority: number;
 }
 
@@ -61,85 +61,21 @@ export default function DeliveryRoutes() {
 
   const fetchRoutes = async () => {
     try {
-      // TODO: Replace with actual API call
-      // For now, using mock data with Tanzania coordinates
-      const mockRoutes: DeliveryRoute[] = [
-        {
-          id: '1',
-          name: 'Morning Route - Kinondoni',
-          totalStops: 5,
-          estimatedDuration: '3h 45m',
-          totalDistance: '28.5 km',
-          status: 'PLANNED',
-          stops: [
-            {
-              id: '1',
-              orderNumber: 'RN1753536465158957',
-              customerName: 'John Doe',
-              address: 'Msasani, Kinondoni, Dar es Salaam',
-              coordinates: [-6.7679, 39.2469], // Msasani area
-              estimatedTime: '9:00 AM',
-              status: 'PENDING',
-              priority: 1,
-            },
-            {
-              id: '2',
-              orderNumber: 'RN1753536465158958',
-              customerName: 'Jane Smith',
-              address: 'Mikocheni, Kinondoni, Dar es Salaam',
-              coordinates: [-6.7733, 39.2420], // Mikocheni area
-              estimatedTime: '9:30 AM',
-              status: 'PENDING',
-              priority: 2,
-            },
-            {
-              id: '3',
-              orderNumber: 'RN1753536465158959',
-              customerName: 'Mike Johnson',
-              address: 'Sinza, Kinondoni, Dar es Salaam',
-              coordinates: [-6.7924, 39.2083], // Sinza area
-              estimatedTime: '10:15 AM',
-              status: 'PENDING',
-              priority: 3,
-            },
-          ],
-        },
-        {
-          id: '2',
-          name: 'Afternoon Route - Ilala',
-          totalStops: 3,
-          estimatedDuration: '2h 30m',
-          totalDistance: '18.2 km',
-          status: 'PLANNED',
-          stops: [
-            {
-              id: '4',
-              orderNumber: 'RN1753536465158960',
-              customerName: 'Sarah Wilson',
-              address: 'Kariakoo, Ilala, Dar es Salaam',
-              coordinates: [-6.8161, 39.2691], // Kariakoo area
-              estimatedTime: '2:00 PM',
-              status: 'PENDING',
-              priority: 1,
-            },
-            {
-              id: '5',
-              orderNumber: 'RN1753536465158961',
-              customerName: 'David Brown',
-              address: 'Upanga, Ilala, Dar es Salaam',
-              coordinates: [-6.8000, 39.2833], // Upanga area
-              estimatedTime: '2:45 PM',
-              status: 'PENDING',
-              priority: 2,
-            },
-          ],
-        },
-      ];
-
-      setRoutes(mockRoutes);
-      setSelectedRoute(mockRoutes[0]);
+      const response = await fetch('/api/delivery/routes');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setRoutes(data.routes || []);
+        if (data.routes && data.routes.length > 0) {
+          setSelectedRoute(data.routes[0]);
+        }
+      } else {
+        console.error('Failed to fetch routes data');
+        setRoutes([]);
+      }
     } catch (error) {
       console.error('Error fetching routes:', error);
+      setRoutes([]);
     } finally {
       setLoading(false);
     }
@@ -162,7 +98,7 @@ export default function DeliveryRoutes() {
     switch (status) {
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
-      case 'IN_TRANSIT':
+      case 'SHIPPED':
         return 'bg-blue-100 text-blue-800';
       case 'DELIVERED':
         return 'bg-green-100 text-green-800';

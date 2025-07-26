@@ -72,6 +72,11 @@ model Address {
   phone           String?
   isDefault       Boolean @default(false)
   
+  // GPS coordinates for precise location tracking
+  latitude        Float?
+  longitude       Float?
+  gpsCoordinates  String? // JSON string: {"lat": -6.7924, "lng": 39.2083, "accuracy": 10}
+  
   // Link to delivery subregion for dynamic pricing
   subregionId     String?
   

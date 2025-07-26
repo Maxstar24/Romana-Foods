@@ -19,7 +19,7 @@ interface DeliveryStop {
   address: string;
   coordinates: [number, number]; // [latitude, longitude]
   estimatedTime: string;
-  status: 'PENDING' | 'IN_TRANSIT' | 'DELIVERED';
+  status: 'PENDING' | 'SHIPPED' | 'DELIVERED';
   priority: number;
 }
 
@@ -60,7 +60,7 @@ export default function DeliveryMap({ stops, routeName }: DeliveryMapProps) {
     const createCustomIcon = (status: string, priority: number) => {
       let color = '#3B82F6'; // blue for pending
       if (status === 'DELIVERED') color = '#10B981'; // green
-      if (status === 'IN_TRANSIT') color = '#F59E0B'; // orange
+      if (status === 'SHIPPED') color = '#F59E0B'; // orange
 
       return L.divIcon({
         html: `
@@ -115,7 +115,7 @@ export default function DeliveryMap({ stops, routeName }: DeliveryMapProps) {
           </p>
           <div style="margin-top: 8px;">
             <span style="
-              background-color: ${stop.status === 'DELIVERED' ? '#10B981' : stop.status === 'IN_TRANSIT' ? '#F59E0B' : '#3B82F6'};
+              background-color: ${stop.status === 'DELIVERED' ? '#10B981' : stop.status === 'SHIPPED' ? '#F59E0B' : '#3B82F6'};
               color: white;
               padding: 2px 8px;
               border-radius: 12px;

@@ -55,68 +55,36 @@ export default function DeliveryHistoryPage() {
 
   const fetchDeliveryHistory = async () => {
     try {
-      // TODO: Replace with actual API call
-      // For now, using mock data
-      const mockDeliveries: DeliveryHistoryItem[] = [
-        {
-          id: '1',
-          orderNumber: 'RN1753536465158957',
-          customerName: 'John Doe',
-          address: 'Msasani, Kinondoni, Dar es Salaam',
-          deliveredAt: '2025-01-26T09:30:00Z',
-          total: 45000,
-          status: 'DELIVERED',
-          notes: 'Customer satisfied',
-          signature: true,
-        },
-        {
-          id: '2',
-          orderNumber: 'RN1753536465158958',
-          customerName: 'Jane Smith',
-          address: 'Mikocheni, Kinondoni, Dar es Salaam',
-          deliveredAt: '2025-01-26T10:15:00Z',
-          total: 32000,
-          status: 'DELIVERED',
-          signature: true,
-        },
-        {
-          id: '3',
-          orderNumber: 'RN1753536465158959',
-          customerName: 'Mike Johnson',
-          address: 'Sinza, Kinondoni, Dar es Salaam',
-          deliveredAt: '2025-01-25T14:30:00Z',
-          total: 67000,
-          status: 'DELIVERED',
-          notes: 'Left with security guard',
-          signature: true,
-        },
-        {
-          id: '4',
-          orderNumber: 'RN1753536465158960',
-          customerName: 'Sarah Wilson',
-          address: 'Kariakoo, Ilala, Dar es Salaam',
-          deliveredAt: '2025-01-25T16:45:00Z',
-          total: 28000,
-          status: 'DELIVERED',
-          signature: true,
-        },
-      ];
-
-      setDeliveries(mockDeliveries);
+      const response = await fetch('/api/delivery/history');
       
-      // Calculate stats
-      const totalDeliveries = mockDeliveries.length;
-      const successfulDeliveries = mockDeliveries.filter(d => d.status === 'DELIVERED').length;
-      const totalEarnings = mockDeliveries.reduce((sum, d) => sum + d.total, 0);
-      
-      setStats({
-        totalDeliveries,
-        successfulDeliveries,
-        averageTime: '2h 15m',
-        totalEarnings,
-      });
+      if (response.ok) {
+        const data = await response.json();
+        setDeliveries(data.deliveries || []);
+        setStats(data.stats || {
+          totalDeliveries: 0,
+          successfulDeliveries: 0,
+          averageTime: '0h 0m',
+          totalEarnings: 0,
+        });
+      } else {
+        console.error('Failed to fetch delivery history');
+        setDeliveries([]);
+        setStats({
+          totalDeliveries: 0,
+          successfulDeliveries: 0,
+          averageTime: '0h 0m',
+          totalEarnings: 0,
+        });
+      }
     } catch (error) {
       console.error('Error fetching delivery history:', error);
+      setDeliveries([]);
+      setStats({
+        totalDeliveries: 0,
+        successfulDeliveries: 0,
+        averageTime: '0h 0m',
+        totalEarnings: 0,
+      });
     } finally {
       setLoading(false);
     }
