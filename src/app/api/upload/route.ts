@@ -1,61 +1,44 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const folder = formData.get('folder') as string || 'uploads';
 
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    // Validate file type
+    // Validate file type - support jpg, jpeg, png, webp
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json({ 
-        error: 'Invalid file type. Only JPEG, PNG, and WebP are allowed.' 
+        error: 'Invalid file type. Only JPEG, JPG, PNG, and WebP are allowed.' 
       }, { status: 400 });
     }
 
-    // Validate file size (10MB max)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size (5MB max for base64 storage)
+    const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       return NextResponse.json({ 
-        error: 'File too large. Maximum size is 10MB.' 
+        error: 'File too large. Maximum size is 5MB for database storage.' 
       }, { status: 400 });
     }
 
+    // Convert to base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Generate unique filename
-    const fileExtension = path.extname(file.name);
-    const uniqueFilename = `${uuidv4()}${fileExtension}`;
-
-    // Create upload directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'images', folder);
-    try {
-      await mkdir(uploadDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist, which is fine
-    }
-
-    // Write file
-    const filePath = path.join(uploadDir, uniqueFilename);
-    await writeFile(filePath, buffer);
-
-    // Return the public URL
-    const publicUrl = `/images/${folder}/${uniqueFilename}`;
+    const base64 = buffer.toString('base64');
+    
+    // Create data URL with proper MIME type
+    const dataUrl = `data:${file.type};base64,${base64}`;
 
     return NextResponse.json({ 
-      url: publicUrl,
-      filename: uniqueFilename,
+      url: dataUrl,
+      filename: file.name,
       size: file.size,
-      type: file.type
+      type: file.type,
+      base64: base64
     });
 
   } catch (error) {

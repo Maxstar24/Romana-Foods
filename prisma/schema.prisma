@@ -111,7 +111,7 @@ model Product {
   slug         String   @unique
   description  String?
   price        Decimal  @db.Decimal(10, 2)
-  images       String[] // Array of image URLs
+  images       String[] // Array of base64 image data
   categoryId   String
   inventory    Int      @default(0)
   reservedStock Int     @default(0) // Stock temporarily held for pending orders
