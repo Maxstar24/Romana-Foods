@@ -28,6 +28,13 @@ model User {
   orders    Order[]
   addresses Address[]
   passwordResets PasswordReset[]
+  
+  // Delivery relationships
+  deliveryOrders Order[] @relation("DeliveryPerson")
+  deliveryRoutes DeliveryRoute[] @relation("DeliveryRoutes")
+  
+  // Review relationships
+  reviews   OrderReview[] @relation("CustomerReviews")
 
   @@map("users")
 }
@@ -49,6 +56,7 @@ model PasswordReset {
 enum UserRole {
   CUSTOMER
   ADMIN
+  DELIVERY
 }
 
 // Address model for shipping
@@ -138,6 +146,15 @@ model Order {
   status          OrderStatus @default(PENDING)
   paymentStatus   PaymentStatus @default(PENDING)
   
+  // Delivery tracking
+  deliveryPersonId     String?
+  deliveryStartedAt    DateTime?
+  deliveryCompletedAt  DateTime?
+  deliverySignatureHash String? // SHA256 hashed signature for privacy
+  deliveryNotes        String?
+  gpsDeliveryLocation  String? // JSON string: {"lat": -6.7924, "lng": 39.2083}
+  customerConfirmedAt  DateTime? // When customer confirmed receipt via QR
+  
   // Timestamps
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
@@ -147,9 +164,10 @@ model Order {
   // Admin notes
   adminNotes      String?
   
-  user      User        @relation(fields: [userId], references: [id])
-  address   Address     @relation(fields: [addressId], references: [id])
-  items     OrderItem[]
+  user         User        @relation(fields: [userId], references: [id])
+  address      Address     @relation(fields: [addressId], references: [id])
+  deliveryPerson User?     @relation("DeliveryPerson", fields: [deliveryPersonId], references: [id])
+  items        OrderItem[]
   statusHistory OrderStatusHistory[]
 
   @@map("orders")
@@ -254,4 +272,65 @@ model DeliverySubregion {
 
   @@unique([regionId, name])
   @@map("delivery_subregions")
+}
+
+// Delivery Routes for optimizing delivery schedules
+model DeliveryRoute {
+  id              String   @id @default(cuid())
+  deliveryPersonId String
+  routeName       String   // e.g., "Morning Route - Kinondoni"
+  plannedDate     DateTime
+  status          DeliveryRouteStatus @default(PLANNED)
+  orderIds        String[] // Array of order IDs in this route
+  routeData       String?  // JSON string with GPS coordinates and optimization data
+  estimatedDuration Int?   // Duration in minutes
+  actualDuration    Int?   // Actual time taken
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  deliveryPerson  User     @relation("DeliveryRoutes", fields: [deliveryPersonId], references: [id])
+
+  @@map("delivery_routes")
+}
+
+enum DeliveryRouteStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Offline delivery logs for syncing when back online
+model OfflineDeliveryLog {
+  id              String   @id @default(cuid())
+  orderNumber     String
+  deliveryPersonId String
+  actionType      String   // "START_DELIVERY", "COMPLETE_DELIVERY", "ADD_SIGNATURE"
+  actionData      String   // JSON string with relevant data
+  deviceTimestamp DateTime // When action was taken on device
+  synced          Boolean  @default(false)
+  syncedAt        DateTime?
+  createdAt       DateTime @default(now())
+
+  @@map("offline_delivery_logs")
+}
+
+// Customer reviews and issue reports
+model OrderReview {
+  id          String   @id @default(cuid())
+  orderNumber String   @unique
+  userId      String
+  rating      Int?     // 1-5 stars, optional
+  comment     String?
+  issueType   String?  // "DAMAGED", "WRONG_ITEM", "LATE", "OTHER"
+  issueDescription String?
+  isResolved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation("CustomerReviews", fields: [userId], references: [id])
+
+  @@map("order_reviews")
 }

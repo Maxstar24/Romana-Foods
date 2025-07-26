@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserRole, OrderStatus, PaymentStatus } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -34,7 +34,25 @@ async function main() {
     },
   });
 
-  console.log('✅ Users created:', { admin: admin.email, customer: customer.email });
+  // Create test delivery person
+  const hashedDeliveryPassword = await bcrypt.hash('delivery123', 12);
+  const deliveryPerson = await prisma.user.upsert({
+    where: { email: 'delivery@romana-natural-products.org' },
+    update: {},
+    create: {
+      email: 'delivery@romana-natural-products.org',
+      name: 'Test Delivery Person',
+      password: hashedDeliveryPassword,
+      role: 'DELIVERY' as UserRole,
+      phone: '+255700123456',
+    },
+  });
+
+  console.log('✅ Users created:', { 
+    admin: admin.email, 
+    customer: customer.email,
+    delivery: deliveryPerson.email 
+  });
 
   // Create categories
   const categories = [
@@ -195,7 +213,243 @@ async function main() {
   }
 
   console.log('✅ Demo address created');
-  console.log('🎉 Database seeding completed successfully!');
+
+  // Create delivery regions for Tanzania
+  const deliveryRegions = [
+    {
+      name: 'Dar es Salaam Central',
+      code: 'DSM-C',
+      description: 'Central Dar es Salaam delivery area',
+      isActive: true,
+    },
+    {
+      name: 'Dar es Salaam Suburbs',
+      code: 'DSM-S',
+      description: 'Suburban areas of Dar es Salaam',
+      isActive: true,
+    },
+    {
+      name: 'Dodoma',
+      code: 'DDM',
+      description: 'Dodoma region delivery',
+      isActive: true,
+    },
+  ];
+
+  const createdRegions = [];
+  for (const region of deliveryRegions) {
+    const created = await prisma.deliveryRegion.upsert({
+      where: { name: region.name },
+      update: {},
+      create: region,
+    });
+    createdRegions.push(created);
+  }
+
+  console.log('✅ Delivery regions created:', createdRegions.map(r => r.name));
+
+  // Create delivery subregions
+  const subregions = [
+    { name: 'Kariakoo', regionName: 'Dar es Salaam Central', deliveryFee: 2500 },
+    { name: 'Msimbazi', regionName: 'Dar es Salaam Central', deliveryFee: 3000 },
+    { name: 'Kinondoni', regionName: 'Dar es Salaam Suburbs', deliveryFee: 4500 },
+    { name: 'Temeke', regionName: 'Dar es Salaam Suburbs', deliveryFee: 5000 },
+    { name: 'Dodoma City', regionName: 'Dodoma', deliveryFee: 7500 },
+  ];
+
+  for (const subregion of subregions) {
+    const region = createdRegions.find(r => r.name === subregion.regionName);
+    if (region) {
+      await prisma.deliverySubregion.upsert({
+        where: { 
+          regionId_name: { 
+            regionId: region.id, 
+            name: subregion.name 
+          } 
+        },
+        update: {},
+        create: {
+          name: subregion.name,
+          regionId: region.id,
+          deliveryFee: subregion.deliveryFee,
+          isActive: true,
+        },
+      });
+    }
+  }
+
+  console.log('✅ Delivery subregions created');
+
+  // Create additional test users for delivery testing
+  const additionalUsers = [
+    {
+      email: 'driver1@romana.com',
+      name: 'John Mwalimu',
+      password: await bcrypt.hash('driver123', 12),
+      role: 'DELIVERY' as UserRole,
+      phone: '+255700111222',
+    },
+    {
+      email: 'driver2@romana.com',
+      name: 'Mary Kilimo',
+      password: await bcrypt.hash('driver123', 12),
+      role: 'DELIVERY' as UserRole,
+      phone: '+255700333444',
+    },
+    {
+      email: 'customer1@test.com',
+      name: 'Ahmed Hassan',
+      password: await bcrypt.hash('test123', 12),
+      role: 'CUSTOMER',
+      phone: '+255700555666',
+    },
+    {
+      email: 'customer2@test.com',
+      name: 'Grace Mwenda',
+      password: await bcrypt.hash('test123', 12),
+      role: 'CUSTOMER',
+      phone: '+255700777888',
+    },
+  ];
+
+  const createdTestUsers = [];
+  for (const userData of additionalUsers) {
+    const created = await prisma.user.upsert({
+      where: { email: userData.email },
+      update: {},
+      create: {
+        email: userData.email,
+        name: userData.name,
+        password: userData.password,
+        role: userData.role as UserRole,
+        phone: userData.phone,
+      },
+    });
+    createdTestUsers.push(created);
+  }
+
+  console.log('✅ Additional test users created:', createdTestUsers.map(u => u.email));
+
+  // Create test addresses for new customers
+  const testCustomers = createdTestUsers.filter(u => u.role === 'CUSTOMER');
+  const testAddresses = [
+    {
+      userId: testCustomers[0]?.id,
+      name: 'Ahmed Hassan',
+      street: '45 Samora Avenue',
+      city: 'Dar es Salaam',
+      region: 'Dar es Salaam',
+      zipCode: '11102',
+      country: 'Tanzania',
+      phone: '+255700555666',
+      isDefault: true,
+    },
+    {
+      userId: testCustomers[1]?.id,
+      name: 'Grace Mwenda',
+      street: '78 Uhuru Street',
+      city: 'Dodoma',
+      region: 'Dodoma',
+      zipCode: '41101',
+      country: 'Tanzania',
+      phone: '+255700777888',
+      isDefault: true,
+    },
+  ];
+
+  for (const address of testAddresses) {
+    if (address.userId) {
+      const existingTestAddress = await prisma.address.findFirst({
+        where: {
+          userId: address.userId,
+          isDefault: true,
+        },
+      });
+      
+      if (!existingTestAddress) {
+        await prisma.address.create({
+          data: address,
+        });
+      }
+    }
+  }
+
+  console.log('✅ Test addresses created');
+
+  // Create sample orders in different states for testing
+  const testProducts = await prisma.product.findMany({ take: 3 });
+  
+  if (testProducts.length >= 3 && testCustomers.length >= 2) {
+    const testOrders = [
+      {
+        userId: testCustomers[0].id,
+        status: 'CONFIRMED' as OrderStatus,
+        items: [
+          { productId: testProducts[0].id, quantity: 2, price: testProducts[0].price },
+          { productId: testProducts[1].id, quantity: 1, price: testProducts[1].price },
+        ],
+      },
+      {
+        userId: testCustomers[1].id,
+        status: 'SHIPPED' as OrderStatus,
+        items: [
+          { productId: testProducts[1].id, quantity: 3, price: testProducts[1].price },
+        ],
+      },
+      {
+        userId: customer.id,
+        status: 'DELIVERED' as OrderStatus,
+        items: [
+          { productId: testProducts[2].id, quantity: 1, price: testProducts[2].price },
+        ],
+      },
+    ];
+
+    for (const [index, orderData] of testOrders.entries()) {
+      const subtotal = orderData.items.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
+      const shippingCost = 3000;
+      const total = subtotal + shippingCost;
+      
+      // Get the user's default address
+      const userAddress = await prisma.address.findFirst({
+        where: { userId: orderData.userId, isDefault: true },
+      });
+      
+      if (!userAddress) continue;
+      
+      const orderNumber = `RMN${Date.now()}${index}`;
+      const order = await prisma.order.create({
+        data: {
+          userId: orderData.userId,
+          addressId: userAddress.id,
+          orderNumber,
+          qrCode: `https://romana-foods.vercel.app/orders/${orderNumber}`,
+          trackingHash: `${orderNumber}_${Date.now()}`,
+          status: orderData.status,
+          paymentStatus: 'CONFIRMED' as PaymentStatus,
+          subtotal,
+          shippingCost,
+          total,
+          items: {
+            create: orderData.items,
+          },
+        },
+      });
+    }
+
+    console.log('✅ Test orders created with different statuses');
+  }
+
+  console.log('🎉 Database seeding completed successfully with delivery test data!');
+  console.log('');
+  console.log('📋 Test Account Summary:');
+  console.log('  👤 Admin: admin@romana-natural-products.org (password: Romana2025!Admin$)');
+  console.log('  🚚 Delivery: delivery@romana-natural-products.org (password: delivery123)');
+  console.log('  🚚 Driver 1: driver1@romana.com (password: driver123)');
+  console.log('  🚚 Driver 2: driver2@romana.com (password: driver123)');
+  console.log('  🛒 Customer: customer@example.com (password: password)');
+  console.log('  🛒 Test Customer 1: customer1@test.com (password: test123)');
+  console.log('  🛒 Test Customer 2: customer2@test.com (password: test123)');
 }
 
 main()

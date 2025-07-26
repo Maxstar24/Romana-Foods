@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { CheckCircle, Clock, Truck, Package, MapPin, Phone, Mail, ArrowLeft, Download } from 'lucide-react';
+import { CheckCircle, Clock, Truck, Package, MapPin, Phone, Mail, ArrowLeft, Download, Star, MessageSquare, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ConfirmDeliveryModal, ReviewModal } from '@/components/ui/delivery-modals';
 
 interface OrderItem {
   id: string;
@@ -34,6 +35,7 @@ interface Order {
   createdAt: string;
   shippedAt?: string;
   deliveredAt?: string;
+  customerConfirmedAt?: string;
   adminNotes?: string;
   user: {
     name: string;
@@ -84,6 +86,13 @@ export default function OrderPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showReview, setShowReview] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [issueType, setIssueType] = useState('');
+  const [issueDescription, setIssueDescription] = useState('');
+  const [confirmationLoading, setConfirmationLoading] = useState(false);
 
   const downloadQRCode = () => {
     if (!order) return;
@@ -97,6 +106,88 @@ export default function OrderPage() {
   };
 
   const downloadReceipt = async () => {
+    if (!order) return;
+    
+    try {
+      const response = await fetch(`/api/orders/${orderNumber}/receipt`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `romana-receipt-${order.orderNumber}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
+    } catch (error) {
+      console.error('Failed to download receipt:', error);
+    }
+  };
+
+  const confirmDeliveryReceived = async () => {
+    if (!order) return;
+    
+    setConfirmationLoading(true);
+    try {
+      const response = await fetch(`/api/orders/${orderNumber}/confirm-delivery`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerConfirmed: true,
+          confirmedAt: new Date().toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        // Refresh order data
+        await fetchOrder();
+        setShowConfirmation(false);
+        alert('Thank you for confirming delivery!');
+      } else {
+        alert('Failed to confirm delivery. Please try again.');
+      }
+    } catch (error) {
+      console.error('Failed to confirm delivery:', error);
+      alert('Failed to confirm delivery. Please try again.');
+    } finally {
+      setConfirmationLoading(false);
+    }
+  };
+
+  const submitReview = async () => {
+    if (!order || (!rating && !issueType)) return;
+    
+    try {
+      const response = await fetch(`/api/orders/${orderNumber}/review`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rating: rating > 0 ? rating : null,
+          comment: reviewComment || null,
+          issueType: issueType || null,
+          issueDescription: issueDescription || null,
+        }),
+      });
+
+      if (response.ok) {
+        setShowReview(false);
+        setRating(0);
+        setReviewComment('');
+        setIssueType('');
+        setIssueDescription('');
+        alert('Thank you for your feedback!');
+      } else {
+        alert('Failed to submit review. Please try again.');
+      }
+    } catch (error) {
+      console.error('Failed to submit review:', error);
+      alert('Failed to submit review. Please try again.');
+    }
+  };
+
+  const openReceipt = () => {
     if (!order) return;
     
     try {
@@ -422,9 +513,104 @@ export default function OrderPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Customer Delivery Confirmation */}
+            {order.status === 'DELIVERED' && !order.customerConfirmedAt && (
+              <Card className="border-green-200 bg-green-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-green-800">
+                    <Package className="h-5 w-5 mr-2" />
+                    Confirm Your Delivery
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-green-700 mb-4">
+                    Did you receive your order? Please confirm delivery to help us improve our service.
+                  </p>
+                  <div className="flex space-x-3">
+                    <Button
+                      onClick={() => setShowConfirmation(true)}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Yes, I Received It
+                    </Button>
+                    <Button
+                      onClick={() => setShowReview(true)}
+                      variant="outline"
+                      className="border-orange-300 text-orange-700 hover:bg-orange-50"
+                    >
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Report an Issue
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Customer Confirmed */}
+            {order.customerConfirmedAt && (
+              <Card className="border-green-200 bg-green-50">
+                <CardContent className="p-4">
+                  <div className="flex items-center text-green-800">
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    <span className="font-medium">Delivery Confirmed</span>
+                  </div>
+                  <p className="text-sm text-green-600 mt-1">
+                    You confirmed receipt on {formatDate(order.customerConfirmedAt)}
+                  </p>
+                  <Button
+                    onClick={() => setShowReview(true)}
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 border-green-300 text-green-700 hover:bg-green-100"
+                  >
+                    <Star className="h-4 w-4 mr-2" />
+                    Leave a Review
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmDeliveryModal
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        onConfirm={confirmDeliveryReceived}
+        orderNumber={orderNumber}
+        isLoading={confirmationLoading}
+      />
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={showReview}
+        onClose={() => setShowReview(false)}
+        onSubmit={async (data) => {
+          try {
+            const response = await fetch(`/api/orders/${orderNumber}/review`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                rating: data.rating,
+                comment: data.comment || null,
+                hasIssue: data.hasIssue,
+                issueDescription: data.issueDescription || null,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error('Failed to submit review');
+            }
+          } catch (error) {
+            console.error('Failed to submit review:', error);
+            throw error;
+          }
+        }}
+        orderNumber={orderNumber}
+      />
     </div>
   );
 }
