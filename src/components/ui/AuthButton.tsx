@@ -3,7 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { User, LogOut, Settings, ShoppingBag, Package, Search } from 'lucide-react';
+import { User, LogOut, Settings, ShoppingBag, Package, Search, Truck } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { logAuth } from '@/lib/logger';
 
@@ -64,7 +64,7 @@ export default function AuthButton() {
         
         // Sign out with NextAuth
         await signOut({ 
-          callbackUrl: '/',
+          callbackUrl: 'https://www.romana-natural-products.org/',
           redirect: true 
         });
       } catch (error) {
@@ -105,42 +105,71 @@ export default function AuthButton() {
             </p>
           </div>
 
-          <Link
-            href="/store"
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            onClick={() => setShowDropdown(false)}
-          >
-            <ShoppingBag className="h-4 w-4 mr-3" />
-            Store
-          </Link>
-
-          <Link
-            href="/orders"
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            onClick={() => setShowDropdown(false)}
-          >
-            <Package className="h-4 w-4 mr-3" />
-            My Orders
-          </Link>
-
-          <Link
-            href="/track"
-            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-            onClick={() => setShowDropdown(false)}
-          >
-            <Search className="h-4 w-4 mr-3" />
-            Track Order
-          </Link>
-
-          {session.user?.role === 'ADMIN' && (
+          {/* Delivery Dashboard Link for DELIVERY users */}
+          {session.user?.role === 'DELIVERY' && (
             <Link
-              href="/admin"
+              href="/delivery"
               className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               onClick={() => setShowDropdown(false)}
             >
-              <Settings className="h-4 w-4 mr-3" />
-              Admin Panel
+              <Truck className="h-4 w-4 mr-3" />
+              Delivery Dashboard
             </Link>
+          )}
+
+          {/* Customer Links for CUSTOMER users */}
+          {session.user?.role === 'CUSTOMER' && (
+            <>
+              <Link
+                href="/store"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setShowDropdown(false)}
+              >
+                <ShoppingBag className="h-4 w-4 mr-3" />
+                Store
+              </Link>
+
+              <Link
+                href="/orders"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setShowDropdown(false)}
+              >
+                <Package className="h-4 w-4 mr-3" />
+                My Orders
+              </Link>
+
+              <Link
+                href="/track"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setShowDropdown(false)}
+              >
+                <Search className="h-4 w-4 mr-3" />
+                Track Order
+              </Link>
+            </>
+          )}
+
+          {/* Admin Link for ADMIN users */}
+          {session.user?.role === 'ADMIN' && (
+            <>
+              <Link
+                href="/admin"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setShowDropdown(false)}
+              >
+                <Settings className="h-4 w-4 mr-3" />
+                Admin Panel
+              </Link>
+
+              <Link
+                href="/store"
+                className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => setShowDropdown(false)}
+              >
+                <ShoppingBag className="h-4 w-4 mr-3" />
+                Store
+              </Link>
+            </>
           )}
 
           <div className="border-t border-gray-100 mt-1">

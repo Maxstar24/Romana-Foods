@@ -50,6 +50,9 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  pages: {
+    signIn: "/auth/signin",
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -64,15 +67,6 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-  },
-  events: {
-    async signOut() {
-      // Custom cleanup logic if needed
-    },
-  },
-  pages: {
-    signIn: "/auth/signin",
-    signOut: "/auth/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
 }; 
