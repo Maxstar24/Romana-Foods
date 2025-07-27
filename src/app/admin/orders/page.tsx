@@ -166,10 +166,27 @@ export default function OrdersManagementPage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
+        console.log('Assignment response:', data);
+        
         alert('Delivery assigned successfully!');
         setAssigningOrderId(null);
         setSelectedDeliveryPerson('');
-        fetchOrders(); // Refresh the orders list
+        
+        // Update the specific order in the list instead of refetching all
+        if (data.updatedOrders && data.updatedOrders.length > 0) {
+          const updatedOrder = data.updatedOrders[0];
+          setOrders(prevOrders => 
+            prevOrders.map(o => 
+              o.id === updatedOrder.id 
+                ? { ...o, deliveryPersonId: updatedOrder.deliveryPersonId, deliveryPerson: updatedOrder.deliveryPerson, status: updatedOrder.status }
+                : o
+            )
+          );
+        } else {
+          // Fallback to refetching all orders
+          fetchOrders();
+        }
       } else {
         const errorData = await response.json();
         alert(`Failed to assign delivery: ${errorData.error}`);

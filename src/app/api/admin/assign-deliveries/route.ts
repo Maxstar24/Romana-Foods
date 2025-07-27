@@ -72,9 +72,34 @@ export async function PATCH(request: NextRequest) {
     console.log(`Assignment result: Updated ${updatedOrders.count} orders for delivery person ${deliveryPerson.name}`);
     console.log(`Order IDs: ${orderIds.join(', ')}`);
 
+    // Fetch the updated orders with full details for verification
+    const updatedOrdersWithDetails = await prisma.order.findMany({
+      where: {
+        id: {
+          in: orderIds,
+        },
+      },
+      include: {
+        deliveryPerson: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    console.log('Updated orders with delivery person:', updatedOrdersWithDetails.map((o: any) => ({
+      id: o.id,
+      orderNumber: o.orderNumber,
+      deliveryPersonId: o.deliveryPersonId,
+      deliveryPersonName: o.deliveryPerson?.name
+    })));
+
     return NextResponse.json({
       message: `Successfully assigned ${updatedOrders.count} orders to ${deliveryPerson.name}`,
       assignedOrders: updatedOrders.count,
+      updatedOrders: updatedOrdersWithDetails,
     });
 
   } catch (error) {
