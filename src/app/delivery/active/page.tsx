@@ -19,8 +19,8 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
 import { hashSignature, createOfflineDeliveryLog } from '@/lib/utils/delivery';
+import QRScanner from '@/components/QRScanner';
 
 interface ActiveDelivery {
   id: string;
@@ -39,7 +39,6 @@ interface ActiveDelivery {
 export default function ActiveDeliveryPage() {
   const { data: session } = useSession();
   const [currentDelivery, setCurrentDelivery] = useState<ActiveDelivery | null>(null);
-  const [isScanning, setIsScanning] = useState(false);
   const [signature, setSignature] = useState<string>('');
   const [deliveryNotes, setDeliveryNotes] = useState('');
   const [isOnline, setIsOnline] = useState(true);
@@ -47,7 +46,6 @@ export default function ActiveDeliveryPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
@@ -91,56 +89,28 @@ export default function ActiveDeliveryPage() {
     }
   }, [isOnline]);
 
-  const startQRScanner = () => {
-    setIsScanning(true);
-    
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-    }
-
-    scannerRef.current = new Html5QrcodeScanner(
-      'qr-scanner',
-      { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-      },
-      false
-    );
-
-    scannerRef.current.render(
-      (decodedText) => {
-        console.log('QR Code scanned:', decodedText);
-        handleQRScan(decodedText);
-        stopQRScanner();
-      },
-      (error) => {
-        // Ignore scanning errors (they're frequent)
-      }
-    );
-  };
-
-  const stopQRScanner = () => {
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-      scannerRef.current = null;
-    }
-    setIsScanning(false);
-  };
-
   const handleQRScan = async (qrData: string) => {
     try {
+      console.log('QR Code scanned:', qrData);
+      
       // Extract order number from QR code URL
       const url = new URL(qrData);
       const orderNumber = url.pathname.split('/').pop();
       
       if (orderNumber) {
         await loadDeliveryOrder(orderNumber);
+      } else {
+        alert('Invalid QR code format. Please scan a valid order QR code.');
       }
     } catch (error) {
       console.error('Invalid QR code:', error);
       alert('Invalid QR code. Please scan a valid order QR code.');
     }
+  };
+
+  const handleQRError = (error: string) => {
+    console.error('QR Scanner error:', error);
+    // You can add user-friendly error handling here
   };
 
   const loadDeliveryOrder = async (orderNumber: string) => {
@@ -362,25 +332,10 @@ export default function ActiveDeliveryPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {!isScanning ? (
-              <div className="text-center py-8">
-                <Camera className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-600 mb-4">
-                  Scan the QR code on the package to start delivery
-                </p>
-                <Button onClick={startQRScanner}>
-                  <Camera className="h-4 w-4 mr-2" />
-                  Start Scanning
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <div id="qr-scanner" className="mb-4"></div>
-                <Button onClick={stopQRScanner} variant="outline">
-                  Stop Scanning
-                </Button>
-              </div>
-            )}
+            <QRScanner 
+              onScan={handleQRScan}
+              onError={handleQRError}
+            />
           </CardContent>
         </Card>
       )}
