@@ -79,7 +79,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Update delivery status
 export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -94,7 +93,14 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const { orderNumber, status, signatureHash, gpsLocation, notes } = body;
 
-    // Verify the order is assigned to this delivery person
+    if (!orderNumber || !status) {
+      return NextResponse.json(
+        { error: 'Order number and status are required' },
+        { status: 400 }
+      );
+    }
+
+    // Find the order and verify it's assigned to this delivery person
     const order = await prisma.order.findFirst({
       where: {
         orderNumber,
