@@ -147,11 +147,18 @@ export default function OrdersManagementPage() {
 
   const assignDelivery = async (orderNumber: string, deliveryPersonId: string) => {
     try {
+      // Find the order ID from the order number
+      const order = orders.find(o => o.orderNumber === orderNumber);
+      if (!order) {
+        alert('Order not found');
+        return;
+      }
+
       const response = await fetch('/api/admin/assign-deliveries', {
-        method: 'POST',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          orderNumbers: [orderNumber],
+          orderIds: [order.id],
           deliveryPersonId,
         }),
       });
