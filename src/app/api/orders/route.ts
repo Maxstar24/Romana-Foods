@@ -186,6 +186,12 @@ export async function GET(request: NextRequest) {
               email: true,
             },
           },
+          deliveryPerson: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
           address: true,
           items: {
             include: {

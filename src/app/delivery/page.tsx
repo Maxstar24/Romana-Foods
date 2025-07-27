@@ -167,7 +167,18 @@ export default function DeliveryDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <Package className="h-12 w-12 text-orange-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Available Orders</h3>
+            <p className="text-gray-600 mb-4">Claim new orders ready for delivery</p>
+            <Link href="/delivery/available">
+              <Button className="w-full bg-orange-600 hover:bg-orange-700">Claim Orders</Button>
+            </Link>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="p-6 text-center">
             <Route className="h-12 w-12 text-blue-600 mx-auto mb-4" />

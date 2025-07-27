@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Eye, Package, Truck, CheckCircle, Clock, XCircle, AlertCircle, UserPlus, Users } from 'lucide-react';
 import Link from 'next/link';
 
 interface Order {
@@ -23,6 +23,11 @@ interface Order {
   total: number;
   createdAt: string;
   updatedAt: string;
+  deliveryPersonId?: string | null;
+  deliveryPerson?: {
+    name: string;
+    email: string;
+  } | null;
   items: Array<{
     id: string;
     product: {
@@ -32,6 +37,12 @@ interface Order {
     quantity: number;
     price: number;
   }>;
+}
+
+interface DeliveryPerson {
+  id: string;
+  name: string;
+  email: string;
 }
 
 const getStatusIcon = (status: string) => {
@@ -89,10 +100,13 @@ export default function OrdersManagementPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [deliveryPersons, setDeliveryPersons] = useState<DeliveryPerson[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL_STATUS');
   const [paymentFilter, setPaymentFilter] = useState('ALL_PAYMENTS');
+  const [assigningOrderId, setAssigningOrderId] = useState<string | null>(null);
+  const [selectedDeliveryPerson, setSelectedDeliveryPerson] = useState<string>('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -101,6 +115,7 @@ export default function OrdersManagementPage() {
       router.push('/');
     } else {
       fetchOrders();
+      fetchDeliveryPersons();
     }
   }, [session, status, router]);
 
@@ -115,6 +130,44 @@ export default function OrdersManagementPage() {
       console.error('Error fetching orders:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchDeliveryPersons = async () => {
+    try {
+      const response = await fetch('/api/admin/delivery-personnel');
+      if (response.ok) {
+        const data = await response.json();
+        setDeliveryPersons(data.deliveryPersons || []);
+      }
+    } catch (error) {
+      console.error('Error fetching delivery personnel:', error);
+    }
+  };
+
+  const assignDelivery = async (orderNumber: string, deliveryPersonId: string) => {
+    try {
+      const response = await fetch('/api/admin/assign-deliveries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderNumbers: [orderNumber],
+          deliveryPersonId,
+        }),
+      });
+
+      if (response.ok) {
+        alert('Delivery assigned successfully!');
+        setAssigningOrderId(null);
+        setSelectedDeliveryPerson('');
+        fetchOrders(); // Refresh the orders list
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to assign delivery: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Error assigning delivery:', error);
+      alert('Failed to assign delivery');
     }
   };
 
@@ -257,7 +310,7 @@ export default function OrdersManagementPage() {
                           </Badge>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-600">
                           <div>
                             <p><strong>Customer:</strong> {order.user.name}</p>
                             <p><strong>Email:</strong> {order.user.email}</p>
@@ -270,16 +323,75 @@ export default function OrdersManagementPage() {
                             <p><strong>Created:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
                             <p><strong>Updated:</strong> {new Date(order.updatedAt).toLocaleDateString()}</p>
                           </div>
+                          <div>
+                            <p><strong>Delivery:</strong> {order.deliveryPerson ? (
+                              <Badge className="bg-green-100 text-green-800 ml-1">
+                                <Users className="h-3 w-3 mr-1" />
+                                {order.deliveryPerson.name}
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="ml-1">
+                                Unassigned
+                              </Badge>
+                            )}</p>
+                          </div>
                         </div>
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <Link href={`/admin/orders/${order.orderNumber}`}>
-                          <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-2" />
-                            View Details
-                          </Button>
-                        </Link>
+                        {/* Assignment controls */}
+                        {assigningOrderId === order.id ? (
+                          <div className="flex items-center space-x-2">
+                            <Select value={selectedDeliveryPerson} onValueChange={setSelectedDeliveryPerson}>
+                              <SelectTrigger className="w-48">
+                                <SelectValue placeholder="Select delivery person" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {deliveryPersons.map((person) => (
+                                  <SelectItem key={person.id} value={person.id}>
+                                    {person.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button 
+                              size="sm" 
+                              onClick={() => assignDelivery(order.orderNumber, selectedDeliveryPerson)}
+                              disabled={!selectedDeliveryPerson}
+                            >
+                              Assign
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => {
+                                setAssigningOrderId(null);
+                                setSelectedDeliveryPerson('');
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            {!order.deliveryPersonId && (order.status === 'CONFIRMED' || order.status === 'PROCESSING' || order.status === 'SHIPPED') && (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setAssigningOrderId(order.id)}
+                              >
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Assign Delivery
+                              </Button>
+                            )}
+                            <Link href={`/admin/orders/${order.orderNumber}`}>
+                              <Button variant="outline" size="sm">
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                              </Button>
+                            </Link>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
