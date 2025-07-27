@@ -58,7 +58,7 @@ export async function PATCH(request: NextRequest) {
           in: orderIds,
         },
         status: {
-          in: ['CONFIRMED', 'PROCESSING'],
+          in: ['CONFIRMED', 'PROCESSING', 'SHIPPED'],
         },
       },
       data: {
@@ -68,6 +68,9 @@ export async function PATCH(request: NextRequest) {
         deliveryStartedAt: new Date(),
       },
     });
+
+    console.log(`Assignment result: Updated ${updatedOrders.count} orders for delivery person ${deliveryPerson.name}`);
+    console.log(`Order IDs: ${orderIds.join(', ')}`);
 
     return NextResponse.json({
       message: `Successfully assigned ${updatedOrders.count} orders to ${deliveryPerson.name}`,

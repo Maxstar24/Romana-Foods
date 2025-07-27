@@ -124,6 +124,8 @@ export default function OrdersManagementPage() {
       const response = await fetch('/api/orders?admin=true&limit=100');
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched orders:', data.orders);
+        console.log('First order delivery info:', data.orders[0]?.deliveryPerson, data.orders[0]?.deliveryPersonId);
         setOrders(data.orders);
       }
     } catch (error) {
